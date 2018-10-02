@@ -76,7 +76,12 @@ fiveFoldGroups(idx1).vec=[iris(idx,:);iris(idx+1,:);iris(idx+2,:);iris(idx+3,:);
 idx1 = idx1 + 1;
 end
 
-for fold = 1: 5   %Number of folds
+% Dette er blot nogle structs der skal bruges til confusion matrix.
+testClassesLoop = struct;
+testClassesManuelLoop = struct;
+testClassesMatlabLoop = struct;
+
+for fold = 1:5   %Number of folds
 % Fold bruges til at beskrive hvilke der går til test eks. 1 6 og 11 osv. Nu finder vi hvilke går til træning ved at fjerne de tal fra talrækken.     
 numberOfGroups = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15];
 trainGroup = numberOfGroups(numberOfGroups~=fold & numberOfGroups~=fold+5 & numberOfGroups~=fold+10);
@@ -246,11 +251,14 @@ indeces = find(differenceVec ~= 0);
 numberWrongClassification = length(indeces); %antallet af forkerte klassificeringer (forskel på test og træning ikke er 0)
 fejlrateManuel(fold,1) = 100*numberWrongClassification/length(dataTestNoLable); %Fejlrate 
 
+% Vi gemmer klassificeringerne til confusion matrix
+testClassesManuelLoop(fold,1).vec = classifiedValue';
+
 %% Udregning med matlabs classify
 
 groupTR = dataTrain.species;
 
-[class,err,POSTERIOR] = classify(dataTestNoLable,X, groupTR);
+[class,err] = classify(dataTestNoLable,X, groupTR);
 errMatlab(fold,1) = err;
 
 differenceVec = dataTest.species - class;
@@ -258,22 +266,44 @@ indeces = find(differenceVec ~= 0);
 numberWrongClassification = length(indeces); %antallet af forkerte klassificeringer (forskel på test og træning ikke er 0)
 fejlrateMatlab(fold,1) = 100*numberWrongClassification/length(dataTestNoLable); %Fejlrate 
 
-%% Confusion matrix
-
-% % Først for manuel
-% figure;
-% categoricalTest = categorical(orginalTestData.species);
-% categoricalClassManuel = categorical(classifiedValue');
-% plotconfusion(categoricalTest,categoricalClassManuel)
-% title(['Manuel: Fold = ',num2str(fold)]);
-% 
-% % Så for Matlab
-% figure;
-% categoricalClassMatlab = categorical(class);
-% plotconfusion(categoricalTest,categoricalClassMatlab);
-% title(['Matlab: Fold = ',num2str(fold)]);
+% Vi gemmer klassificeringerne til confusion matrix
+testClassesMatlabLoop(fold,1).vec = class;
 
 end % Slut på five fold validation loop
+
+%% Confusion matrix
+
+% Først smides alle de forventede klassificeringer, de egentlige
+% klassificeringer manuelt og de egentlige klassificeringer ved matlab
+% sammen til en variable efter hinanden.
+testClasses = [dataTest.species; dataTest.species; dataTest.species; dataTest.species; dataTest.species];
+testClassesManuel = [testClassesManuelLoop(1,1).vec; testClassesManuelLoop(2,1).vec; testClassesManuelLoop(3,1).vec; testClassesManuelLoop(4,1).vec; testClassesManuelLoop(5,1).vec];
+testClassesMatlab = [testClassesMatlabLoop(1,1).vec; testClassesMatlabLoop(2,1).vec; testClassesMatlabLoop(3,1).vec; testClassesMatlabLoop(4,1).vec; testClassesMatlabLoop(5,1).vec];
+
+% Nu laves de så categorial så vi kan bruge dem i plotconfusion
+categoricalDataTest = categorical(testClasses);
+categoricalClassManuel = categorical(testClassesManuel);
+categoricalClassMatlab = categorical(testClassesMatlab);
+
+figure;
+plotconfusion(categoricalClassManuel,categoricalDataTest); % FLIPPET!!!!
+title('Manuel confusion matrix','Fontsize',16,'Fontweight','bold');
+ylabel('True value','Fontsize',12,'Fontweight','bold')
+xlabel('Predicted value','Fontsize',12,'Fontweight','bold')
+xticks([1 2 3])
+xticklabels({'Setosa','Versicolor','Virginica'})
+yticks([1 2 3])
+yticklabels({'Setosa','Versicolor','Virginica'})
+
+figure;
+plotconfusion(categoricalClassMatlab,categoricalDataTest); % FLIPPET!!!!
+title('Matlab confusion matrix','Fontsize',16,'Fontweight','bold');
+ylabel('True value','Fontsize',12,'Fontweight','bold')
+xlabel('Predicted value','Fontsize',12,'Fontweight','bold')
+xticks([1 2 3])
+xticklabels({'Setosa','Versicolor','Virginica'})
+yticks([1 2 3])
+yticklabels({'Setosa','Versicolor','Virginica'})
 
 %% Udskriv de værdier vi er interesseret i
 fejlrateManuel
