@@ -44,6 +44,9 @@ end
 for i=1:length(dataTestNoLable)
     for idx=1:length(dataTrainNoLable)
 distance(idx,i) = sum((abs(dataTrainNoLable(idx,:)-dataTestNoLable(i,:)).^2)).^0.5;
+% distance(idx,i) =
+% sum((abs(dataTrainNoLable(idx,:)-dataTestNoLable(i,:)).^k)).^(1/k); %
+% Hvis man gerne vil brug Minkowski i stedet for Euclidean.
     end
 end
 
