@@ -14,8 +14,6 @@ classes = length(classLabels);
 
 %load('splitIndex');
 cv = cvpartition(size(iris,1),'HoldOut',0.2);
-cv = cvpartition(size(iris,1),'HoldOut',0.2);
-cv = cvpartition(size(iris,1),'HoldOut',0.2);
 splitIndex = cv.test;
 dataTest  = iris(splitIndex,:);
 dataTrain = iris(~splitIndex,:);
