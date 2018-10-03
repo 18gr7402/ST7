@@ -13,8 +13,10 @@ classes = length(classLabels);
 %% Separate to training and test data
 
 %load('splitIndex');
- cv = cvpartition(size(iris,1),'HoldOut',0.2);
- splitIndex = cv.test;
+cv = cvpartition(size(iris,1),'HoldOut',0.2);
+cv = cvpartition(size(iris,1),'HoldOut',0.2);
+cv = cvpartition(size(iris,1),'HoldOut',0.2);
+splitIndex = cv.test;
 dataTest  = iris(splitIndex,:);
 dataTrain = iris(~splitIndex,:);
 
@@ -43,7 +45,7 @@ end
 
 for i=1:length(dataTestNoLable)
     for idx=1:length(dataTrainNoLable)
-distance(idx,i) = sum((abs(dataTrainNoLable(idx,:)-dataTestNoLable(i,:)).^k)).^(1/k);
+distance(idx,i) = sum((abs(dataTrainNoLable(idx,:)-dataTestNoLable(i,:)).^2)).^0.5;
     end
 end
 
@@ -67,7 +69,6 @@ differenceVec = dataTest.species - classManuel';
 indeces = find(differenceVec ~= 0);
 numberWrongClassification = length(indeces);
 fejlrateManuel = 100*numberWrongClassification/length(dataTestNoLable) %Fejlrate.
-
 
 %% KNN Matlab
 
