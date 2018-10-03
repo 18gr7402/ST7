@@ -137,7 +137,7 @@ classManuel = mode(knnLabs);  % Returnere most occuring value, altså vores klass
 differenceVec = dataTest.species - classManuel';
 indeces = find(differenceVec ~= 0);
 numberWrongClassification = length(indeces);
-fejlrateManuel(fold,1) = 100*numberWrongClassification/length(dataTestNoLable) %Fejlrate.
+fejlrateManuel(fold,1) = 100*numberWrongClassification/length(dataTestNoLable); %Fejlrate.
 
 % Vi gemmer klassificeringerne til confusion matrix
 testClassesManuelLoop(fold,1).vec = classManuel';
@@ -155,7 +155,7 @@ classMatlab = predict(modelMatlab,dataTestNoLable);
 differenceVec = dataTest.species - classMatlab;
 indeces = find(differenceVec ~= 0); 
 numberWrongClassification = length(indeces); % Antallet af forkerte klassificeringer (forskel på test og træning ikke er 0).
-fejlrateMatlab(fold,1) = 100*numberWrongClassification/length(dataTestNoLable) % Fejlrate.
+fejlrateMatlab(fold,1) = 100*numberWrongClassification/length(dataTestNoLable); % Fejlrate.
 
 % Vi gemmer klassificeringerne til confusion matrix
 testClassesMatlabLoop(fold,1).vec = classMatlab;
