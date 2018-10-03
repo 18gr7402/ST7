@@ -71,11 +71,11 @@ fejlrateManuel = 100*numberWrongClassification/length(dataTestNoLable) %Fejlrate
 %% KNN Matlab
 
 % Brug fitcknn til at lave model
-modelMatlab = fitcknn(dataTrain,dataTrain.species,'NumNeighbors',k);
+modelMatlab = fitcknn(dataTrainNoLable,dataTrain.species,'NumNeighbors',k);
 % cvmodel = crossval(Mdl)  % A cross validation on the trainingdata.
 
 %% Benyt KNN til klassifikation
-classifiedValue = predict(modelMatlab,dataTest);
+classifiedValue = predict(modelMatlab,dataTestNoLable);
 
 %% Fejlrate
 differenceVec = dataTest.species - classifiedValue;

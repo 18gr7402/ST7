@@ -76,11 +76,6 @@ fiveFoldGroups(idx1).vec=[iris(idx,:);iris(idx+1,:);iris(idx+2,:);iris(idx+3,:);
 idx1 = idx1 + 1;
 end
 
-% % Dette er blot nogle structs der skal bruges til confusion matrix.
-% testClassesLoop = struct;
-% testClassesManuelLoop = struct;
-% testClassesMatlabLoop = struct;
-
 for fold = 1:5   %Number of folds
 % Fold bruges til at beskrive hvilke der går til test eks. 1 6 og 11 osv. Nu finder vi hvilke går til træning ved at fjerne de tal fra talrækken.     
 numberOfGroups = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15];
@@ -150,20 +145,20 @@ testClassesManuelLoop(fold,1).vec = classManuel';
 %% KNN Matlab
 
 % Brug fitcknn til at lave model
-modelMatlab = fitcknn(dataTrain,dataTrain.species,'NumNeighbors',k);
+modelMatlab = fitcknn(dataTrainNoLable,dataTrain.species,'NumNeighbors',k);
 % cvmodel = crossval(Mdl)  % A cross validation on the trainingdata.
 
 %% Benyt KNN til klassifikation
-classifiedValue = predict(modelMatlab,dataTest);
+classMatlab = predict(modelMatlab,dataTestNoLable);
 
 %% Fejlrate
-differenceVec = dataTest.species - classifiedValue;
+differenceVec = dataTest.species - classMatlab;
 indeces = find(differenceVec ~= 0); 
 numberWrongClassification = length(indeces); % Antallet af forkerte klassificeringer (forskel på test og træning ikke er 0).
 fejlrateMatlab(fold,1) = 100*numberWrongClassification/length(dataTestNoLable) % Fejlrate.
 
 % Vi gemmer klassificeringerne til confusion matrix
-testClassesMatlabLoop(fold,1).vec = classifiedValue;
+testClassesMatlabLoop(fold,1).vec = classMatlab;
 
 end % Slut på five fold validation loop
 
