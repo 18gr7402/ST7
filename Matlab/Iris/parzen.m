@@ -1,0 +1,16 @@
+function y = parzen(x,a,nr,width)
+%Funktion til udregning af Parzen-vindues funktion
+h = width/sqrt(nr);
+n = normal((x - a)/h);
+%m = sum(n);
+k = sum(n);
+%k = m/(width/sqrt(nr));
+%y = m/nr;
+y = k/nr;
+p=0;
+
+%Der hvor der står m = sum(n) burde der stå k = sum(n)
+%Der hvor der står k = .. skal bare slettes
+%Der skal ændres i ligningen for y, der ikke indgå m men i stedet k.
+
+% Det er y vi vil regne, som svarer til pn(x), som er densitets estimat.
