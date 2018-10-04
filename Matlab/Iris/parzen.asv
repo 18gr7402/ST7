@@ -6,7 +6,7 @@ n = normal((x - a)/h); % x=centrum af viduet, a=feature værdien(x-aksen)
 k = sum(n);
 %k = m/(width/sqrt(nr));
 %y = m/nr;
-y = k/nr; % Her divideres der ikke med V da vi lader n gå mod uendeligt, se slide 12 fra PR kursusgang 3.
+y = k/nr; % Her divideres der ikke med V, se slide 12 fra PR kursusgang 3.
 p=0;
 
 %Der hvor der står m = sum(n) burde der stå k = sum(n)
