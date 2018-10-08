@@ -1,57 +1,184 @@
-%OBS: Dette kode tager 90% udgangspunkt i Alex' besvarelse fra PR 
-%kursusgang 3. Har ændret til vores iris data og værdier for n og
-%width der passer til det samt udvalgt en feature af de fire tilgængelige
-
 clc
-clear all
+clear
 close all
 
-load('irisData.mat');
+%% Beskrivelse
 
-iris1 = [iris.sepal_length]; %vælger en feature, sepal længde 
-%(næste skridt udover klassifier er nok at få alle fire med
-traIris1 = iris1'; 
+% Kode til Parzen Window Classifikation 
+% Køres på iris data, der først loades.
 
+load ('irisWorkSpace.mat')
 
-%Histogram over data fordelt på en feature. Data er ikke opdelt i
-%klasser.
+% Species lavet til et nummerisk indeks
+c = categorical(iris.species(1:end));
+iris.species = grp2idx(c);
+
+%% Histrogram for hver enkelt feature
+
+classLabels = unique(iris.species);
+classes = length(classLabels);
+classIndex = [0,0,0];
+for classes=1:length(classes)+1
+    classIdx=find(iris.species>classes);
+    classIndex(classes)=classIdx(1);
+end
 figure(1)
-hist(iris1,20)
-title('Histogram over feature 1 data fordelt på de tre klasser')
-xlabel('Sepal length [cm]')
-ylabel('Count')
-axis([4 8 0 18])
-legend('Sepal length')
+subplot(2,2,1)
+h1_SL = histogram(iris.sepal_length(1:classIndex(1)-1));
+hold on
+h2_SL = histogram(iris.sepal_length(classIndex(1):classIndex(2)-1));
+hold on 
+h3_SL = histogram(iris.sepal_length(classIndex(2):end));
+hold on
+title('Feature 1: Sepal Length');
+legend([h1_SL, h2_SL, h3_SL],{'Setosa','Versicolor','Virginica'});
 
-nr=[30 60 90 120 150]; %antal samples vi bruger
-width=[0.25 1 4]; % width svarer til h1, som er en udglatningsparameter, der anvendes til at beregne hn i funktionen Parzen.m
+
+subplot(2,2,2)
+h1_SW = histogram(iris.sepal_width(1:classIndex(1)-1));
+hold on
+h2_SW = histogram(iris.sepal_width(classIndex(1):classIndex(2)-1));
+hold on 
+h3_SW = histogram(iris.sepal_width(classIndex(2):end));
+hold on
+title('Feature 2: Sepal Width');
+legend([h1_SW, h2_SW, h3_SW],{'Setosa','Versicolor','Virginica'});
+
+subplot(2,2,3)
+h1_PL = histogram(iris.petal_length(1:classIndex(1)-1));
+hold on
+h2_PL = histogram(iris.petal_length(classIndex(1):classIndex(2)-1));
+hold on 
+h3_PL = histogram(iris.petal_length(classIndex(2):end));
+hold on
+title('Feature 3: Petal Length');
+legend([h1_PL, h2_PL, h3_PL],{'Setosa','Versicolor','Virginica'});
+
+subplot(2,2,4)
+h1_PW = histogram(iris.petal_width(1:classIndex(1)-1));
+hold on
+h2_PW = histogram(iris.petal_width(classIndex(1):classIndex(2)-1));
+hold on 
+h3_PW = histogram(iris.petal_width(classIndex(2):end));
+hold on
+title('Feature 4: Petal Width');
+legend([h1_PW, h2_PW, h3_PW],{'Setosa','Versicolor','Virginica'});
+
+%% Histrogram for hver klasse
+
+class1 = [iris.sepal_length(iris.species == 1) iris.sepal_width(iris.species == 1) iris.petal_length(iris.species == 1) iris.petal_width(iris.species == 1)];
+class2 = [iris.sepal_length(iris.species == 2) iris.sepal_width(iris.species == 2) iris.petal_length(iris.species == 2) iris.petal_width(iris.species == 2)];
+class3 = [iris.sepal_length(iris.species == 3) iris.sepal_width(iris.species == 3) iris.petal_length(iris.species == 3) iris.petal_width(iris.species == 3)];
+
+allDataNoLabel = [class1; class2; class3];
 
 figure(2)
-n=1;
-featVal = (4:0.1:10); %laver vindue fra x=4 til x=10 der rykkes 0,1 af gangen
+subplot(3,1,1)
+h_c1_spec1 = histogram(iris.sepal_length(iris.species == 1),10);
+hold on
+h_c1_spec2 = histogram(iris.sepal_width(iris.species == 1),10);
+hold on 
+h_c1_spec3 = histogram(iris.petal_length(iris.species == 1),10);
+hold on
+h_c1_spec4 = histogram(iris.petal_width(iris.species == 1),10);
+legend([h_c1_spec1, h_c1_spec2, h_c1_spec3, h_c1_spec4],{'Sepal Length','Sepal Width','Petal Length','Petal Width'});
+title('Class 1: Setosa');
+
+subplot(3,1,2)
+h_c2_spec1 = histogram(iris.sepal_length(iris.species == 2),10);
+hold on
+h_c2_spec2 = histogram(iris.sepal_width(iris.species == 2),10);
+hold on 
+h_c2_spec3 = histogram(iris.petal_length(iris.species == 2),10);
+hold on
+h_c2_spec4 = histogram(iris.petal_width(iris.species == 2),10);
+legend([h_c2_spec1, h_c2_spec2, h_c2_spec3, h_c2_spec4],{'Sepal Length','Sepal Width','Petal Length','Petal Width'});
+title('Class 2: Versicolor');
+
+subplot(3,1,3)
+h_c3_spec1 = histogram(iris.sepal_length(iris.species == 3),10);
+hold on
+h_c3_spec2 = histogram(iris.sepal_width(iris.species == 3),10);
+hold on 
+h_c3_spec3 = histogram(iris.petal_length(iris.species == 3),10);
+hold on
+h_c3_spec4 = histogram(iris.petal_width(iris.species == 3),10);
+legend([h_c3_spec1, h_c3_spec2, h_c3_spec3, h_c3_spec4],{'Sepal Length','Sepal Width','Petal Length','Petal Width'});
+title('Class 3: Verginica');
+
+
+%% Definér størrelsen på samles (no) og vinduesbredden (width)
+
+no = length(class1);  %Denne defineres til at være længden på én klasse, da det bruges som træningsdata
+width = 1/sqrt(no);
+
+%% Udvælg testdata (som her kun er 1 række fra oprindelig data)
+testdata = allDataNoLabel(56,:);
+
+%Jeg udregner p for hver klasse i forhold til mit testdata. 
+%Når række 56 vælges, bliver prob2 højest, hvilket jeg forventer.
+%Når række 1 vælges, bliver prob1 højest, hvilket jeg forventer.
+
+    for j = 1:length(class1)
+       prob1=(sum(normal((testdata-class1(j,:))/width)))/no; 
+    end   
+
+     for j = 1:length(class2)
+       prob2=(sum(normal((testdata-class2(j,:))/width)))/no; 
+     end 
+    
+     for j = 1:length(class3)
+       prob3=(sum(normal((testdata-class3(j,:))/width)))/no; 
+     end 
+     
+%% OBS: Jeg tror ikke det er rigtigt, at tage testdata ind, 
+% da funktionen fra %kurset i stedet definerer featurevalues, som rykker sig med et inkrement
+%på 0.1. Derfor sættes det også ind. Her benyttes funktionen fra kurset. 
+
+
+n=50;  %Da det er størrelsen på klassen
+width = 1; % Det er tilfældigt valgt (I kursusgangen blev der brugt 0,25, 1 og 4.
+featVal = (-1:0.1:8); %laver vindue fra x=0 til x=8 der rykkes 0,1 af gangen. Det er valgt ud fra histogramplottene for de enkelte klasser.
+
+%Alt klassedata transponeres for at kunne indgå i funktionen
+traclass1 = class1';
+traclass2 = class2';
+traclass3 = class3';
+
 for winWidthNo=1:length(width)
-    for sampAntNo=1:length(nr)
-        selectDat = traIris1(1:nr(sampAntNo));        
-        for featValNo =1:length(featVal) % Definere antal vindue vi beregner udfra. Der er ialt 101 vinduer.
+    for sampAntNo=1:length(n)
+        selectDat1 = traclass1(1:n(sampAntNo)); %Vi vil gerne udregne p(x) for hver klasse
+        selectDat2 = traclass2(1:n(sampAntNo));
+        selectDat3 = traclass3(1:n(sampAntNo));
+        for featValNo =1:length(featVal) % Definere antal vinduer, vi beregner udfra.
             % Da parzen funktionen laver et normalfordelt vindue (Gaussisk) bliver vinduet ikke kvadratisk men klokkeformet.
-            pdfVal(featValNo) =  parzen(featVal(featValNo),selectDat,nr(sampAntNo),width(winWidthNo)); %Sandsynlighedsværdien pn(x) for hvert af de 101 vinduer
+            pdfVal1(featValNo) =  parzen(featVal(featValNo),selectDat1,n(sampAntNo),width(winWidthNo)); %Sandsynlighedsværdien pn(x) for hvert vindue for klasse 1
+            pdfVal2(featValNo) =  parzen(featVal(featValNo),selectDat2,n(sampAntNo),width(winWidthNo)); %Sandsynlighedsværdien pn(x) for hvert vindue for klasse 2
+            pdfVal3(featValNo) =  parzen(featVal(featValNo),selectDat3,n(sampAntNo),width(winWidthNo)); %Sandsynlighedsværdien pn(x) for hvert vindue for klasse 3
         end        
-%         w = pdfVal';
-        subplot(3,5,n)
-        plot(featVal,pdfVal)
-        axis tight
-        title(['h1 = ',num2str(width(winWidthNo)),' n = ',num2str(nr(sampAntNo))])
-        n=n+1;
     end
 end
+
+figure(3)
+subplot(3,1,1)
+plot(pdfVal1)
+title('p(x) for klasse 1: Setosa')
 xlabel('Feature value')
 ylabel('p(x)')
 
-%Ser på figur hvad der passer bedst ved at sammenligne fig 1 (histogram) 
-%med de enkelte grafer på fig 2. Kan også prøve med andre vinduestørrelser.
-%Gøres bare ved at ændre width
+subplot(3,1,2)
+plot(pdfVal2)
+title('p(x) for klasse 2: Versicolor ')
+xlabel('Feature value')
+ylabel('p(x)')
 
-%Forslag til næste skridt i dette kode:
-    %Bruge det til klassificering (alle n kan ikke bruges til at lave modellen opdel i træningsdata og testdata)
-    %Få alle fire features med
+subplot(3,1,3)
+plot(pdfVal3)
+title('Feature value: Virginica')
+xlabel('Feature value')
+ylabel('p(x)')
 
+%Man kan af figuren se, at fordelingen nogenlunder følger histrogrammet for
+%de tre klasser.
+
+%% Vi mangler at finde frem til, hvordan vi klassificerer ud fra ovenstående.
