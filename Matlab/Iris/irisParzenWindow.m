@@ -115,7 +115,7 @@ width = 1/sqrt(no);
 %% Udvælg testdata (som her kun er 1 række fra oprindelig data)
 testdata = allDataNoLabel(56,:);
 
-%Jeg udregner p for hver klasse i forhold til mit testdata. 
+%Jeg udregner p(x) for hver klasse, som er vores likelihood for hver klasse i forhold til mit testdata. 
 %Når række 56 vælges, bliver prob2 højest, hvilket jeg forventer.
 %Når række 1 vælges, bliver prob1 højest, hvilket jeg forventer.
 
@@ -129,12 +129,38 @@ testdata = allDataNoLabel(56,:);
     
      for j = 1:length(class3)
        prob3=(sum(normal((testdata-class3(j,:))/width)))/no; 
-     end 
+     end
+     
+     %Vi kan vælge blot at gå med likelihoods til at klassificere ud fra,
+     %men vi kan også vælge at klassificere ud fra posterior probability,
+     %som udregnes herunder. (Men det har ingen betydning for
+     %klassifikaitonen, blot at det normaliseres, så sandsynligheden
+     %summerer op til 1)
+     
+     %Vi kan udregne posterior probability ved at tage likelihood*prior og
+     %dividere det med evidens.
+     %Prior er ens, så den går ud
+     %evidens er ud fra bayes formel blot likelihoods for hver enkelt
+     %klasse summeret sammen.
+     %Derfor kan man udregne posterior prob. for hver klasse for den værdi
+     %vi vælger at klassificere
+     
+     postprob_C1 = prob1/(prob1+prob2+prob3);
+     postprob_C2 = prob2/(prob1+prob2+prob3);
+     postprob_C3 = prob3/(prob1+prob2+prob3);
+     
+     %Ud fra det kan vi tydeligt se, at det stemmer overens med det vi
+     %forventer.
+     
      
 %% OBS: Jeg tror ikke det er rigtigt, at tage testdata ind, 
 % da funktionen fra %kurset i stedet definerer featurevalues, som rykker sig med et inkrement
 %på 0.1. Derfor sættes det også ind. Her benyttes funktionen fra kurset. 
-
+%HOV: Det var faktisk rigtig nok det jeg havde gjort. Det vi når frem til
+%ved at tage testdata - klassedata vil være nogenlunde den samme likelihood
+%som hvis man lavede en sandsynlighedsdistribution for hver eneste feature
+%og klasse. Så vil man gå ind og aflæse ud fra værdierne og finde frem til
+%det samme. 
 
 n=50;  %Da det er størrelsen på klassen
 width = 1; % Det er tilfældigt valgt (I kursusgangen blev der brugt 0,25, 1 og 4.
@@ -178,7 +204,10 @@ title('Feature value: Virginica')
 xlabel('Feature value')
 ylabel('p(x)')
 
-%Man kan af figuren se, at fordelingen nogenlunder følger histrogrammet for
+%Man kan af figuren se, at fordelingen nogenlunde følger histrogrammet for
 %de tre klasser.
 
-%% Vi mangler at finde frem til, hvordan vi klassificerer ud fra ovenstående.
+%OBS! Dette er klasse likelihoots, men vi har ikke taget højde for de fire
+%features. Det vil gå hen og blive 4 dimensionelt. 
+
+
