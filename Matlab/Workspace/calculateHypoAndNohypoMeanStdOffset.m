@@ -41,5 +41,5 @@ end
 realValues = ~isnan(hypoMeanStd);
 antalLabResults = length(find(realValues(:,2)~=0));
 
-hypoMeanStdUdenNAN= hypoMeanStd(find(realValues(:,2)~=0),2:3);
+hypoMeanStdUdenNAN = hypoMeanStd(find(realValues(:,2)~=0),2:3);
 
