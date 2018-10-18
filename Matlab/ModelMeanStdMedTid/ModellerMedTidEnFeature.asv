@@ -5,12 +5,12 @@ close all
 
 %% Load data
 
-load('hypoDiabetesAllMeasurementsMeanStd');
+load('hypoMeanStdOffset600');
 load('nohypoDiabetesAllMeasurementsMeanStd');
 
 %% Lav labels
 
-hypoMeanStd(:,4) = ones(1:end);
+hypoMeanStdUdenNAN(:,3) = ones(1:end);
 nohypoMeanStd(:,4) = zeros(1:end);
 
 %% Hvis vi vil inddele i et tænings og test sæt
@@ -31,8 +31,8 @@ nohypoMeanStd(:,4) = zeros(1:end);
 % testData = [testnoHypoMeanStd;testHypoMeanStd];
 
 %% Sammesæt matrix
-allData = [nohypoMeanStd(:,3);hypoMeanStd(:,3)]; % Vælg data '2':mean '3':std '2:3': Begge
-trainLabelVec = [nohypoMeanStd(:,4);hypoMeanStd(:,4)];
+allData = [nohypoMeanStd(:,3);hypoMeanStdUdenNAN(:,1)]; % Vælg data '2':mean '3':std '2:3': Begge
+trainLabelVec = [nohypoMeanStd(:,4);hypoMeanStdUdenNAN(:,3)];
 
 %% Opdelig af data til k-fold validation
 
@@ -60,7 +60,7 @@ end
 mFoldErrorVec=sum((samLabelVec-trainLabelVec)~=0)/size(trainLabelVec,1)
 
 %% ROC curve
-[X,Y,T,AUC] = perfcurve(trainLabelVec,samScoreVec(:,2),1);
+[X,Y,T,AUC] = perfcurve(trainLabelVec,samScoreVec(:,1),1);
 figure;
 plot(X,Y)
 xlabel('False positive rate')

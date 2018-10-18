@@ -5,9 +5,9 @@ close all
 % load data
 
 % Fjern labels
-patient=[hypodiabetesAllMeasurementspluslabresultoffset.patientunitstayid];   %Tilpas til data (med eller uden 'no')
-labresult=[hypodiabetesAllMeasurementspluslabresultoffset.labresult];
-offset = [hypodiabetesAllMeasurementspluslabresultoffset.labresultoffset];
+patient=[nohypodiabetesAllMeasurementspluslabresultoffset.patientunitstayid];   %Tilpas til data (med eller uden 'no')
+labresult=[nohypodiabetesAllMeasurementspluslabresultoffset.labresult];
+offset = [nohypodiabetesAllMeasurementspluslabresultoffset.labresultoffset];
 
 % Find unikke
 [u i j] = unique(patient);
@@ -41,5 +41,5 @@ end
 realValues = ~isnan(hypoMeanStd);
 antalLabResults = length(find(realValues(:,2)~=0));
 
-hypoMeanStdUdenNAN = hypoMeanStd(find(realValues(:,2)~=0),2:3);
+nohypoMeanStdUdenNAN = hypoMeanStd(find(realValues(:,2)~=0),2:3);
 
