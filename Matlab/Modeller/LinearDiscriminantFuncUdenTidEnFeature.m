@@ -31,7 +31,7 @@ nohypoMeanStd(:,4) = zeros(1:end);
 % testData = [testnoHypoMeanStd;testHypoMeanStd];
 
 %% Sammesæt matrix
-allData = [nohypoMeanStd(:,3);hypoMeanStd(:,3)]; % Vælg data '2':mean '3':std '2:3': Begge
+allData = [nohypoMeanStd(:,2:3);hypoMeanStd(:,2:3)]; % Vælg data '2':mean '3':std '2:3': Begge
 trainLabelVec = [nohypoMeanStd(:,4);hypoMeanStd(:,4)];
 
 %% Opdelig af data til k-fold validation
@@ -57,7 +57,8 @@ for foldNo=1:nFold
 end
 
 %% m-fold error rate
-mFoldErrorVec=sum((samLabelVec-trainLabelVec)~=0)/size(trainLabelVec,1)
+mFoldErrorVec=sum((samLabelVec-trainLabelVec)~=0)/size(trainLabelVec,1);
+AUC
 
 %% ROC curve
 [X,Y,T,AUC] = perfcurve(trainLabelVec,samScoreVec(:,2),1);
