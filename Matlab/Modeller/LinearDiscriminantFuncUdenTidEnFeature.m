@@ -1,5 +1,6 @@
 clc
 close all
+clear
 
 %% Model på glukose mean uden tidsaspekt
 
@@ -58,7 +59,6 @@ end
 
 %% m-fold error rate
 mFoldErrorVec=sum((samLabelVec-trainLabelVec)~=0)/size(trainLabelVec,1);
-AUC
 
 %% ROC curve
 [X,Y,T,AUC] = perfcurve(trainLabelVec,samScoreVec(:,2),1);
@@ -67,3 +67,5 @@ plot(X,Y)
 xlabel('False positive rate')
 ylabel('True positive rate')
 title('ROC for m-fold validation')
+
+AUC

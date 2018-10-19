@@ -2,7 +2,7 @@ clc
 close all
 clear
 
-%% Model på glukose mean uden tidsaspekt
+%% Model på glukose mean med tidsaspekt
 
 %% Load data
 
@@ -34,7 +34,7 @@ hypoMeanStdUdenNAN = hypoMeanStdUdenNAN(find(hypoMeanStdUdenNAN(:,2)~=0),:);
 % testData = [testnoHypoMeanStd;testHypoMeanStd];
 
 %% Sammesæt matrix
-allData = [nohypoMeanStd(:,3);hypoMeanStdUdenNAN(:,2)]; % Vælg data '2':mean '3':std '2:3': Begge
+allData = [nohypoMeanStd(:,2:3);hypoMeanStdUdenNAN(:,1:2)]; % Vælg data '2' og '1':mean '3' og '2':std '2:3' og '1:2': Begge
 trainLabelVec = [nohypoMeanStd(:,4);hypoMeanStdUdenNAN(:,3)];
 
 %% Opdelig af data til k-fold validation
@@ -69,4 +69,5 @@ plot(X,Y)
 xlabel('False positive rate')
 ylabel('True positive rate')
 title('ROC for m-fold validation')
+
 AUC
