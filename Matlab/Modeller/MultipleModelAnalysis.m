@@ -85,7 +85,7 @@ classifier{3} = fitctree(X,y);
 %Train a k-nearest neighbor classifier.
 classifier{4} = fitcknn(X,y);
 %Train a support vector machine
-classifier{5} = fitcsvm(X,y);
+%classifier{5} = fitcsvm(X,y);
 
    [mFoldLabel,mFoldScore] = predict(classifier{1},allData(testIndex,:));
    % saves results for each m-fold
@@ -107,10 +107,10 @@ classifier{5} = fitcsvm(X,y);
    samLabelVec.classifier4(testIndex,:)=mFoldLabel;
    samScoreVec.classifier4(testIndex,:)=mFoldScore;
    
-   [mFoldLabel,mFoldScore] = predict(classifier{5},allData(testIndex,:));
-   % saves results for each m-fold
-   samLabelVec.classifier5(testIndex,:)=mFoldLabel;
-   samScoreVec.classifier5(testIndex,:)=mFoldScore;
+%    [mFoldLabel,mFoldScore] = predict(classifier{5},allData(testIndex,:));
+%    % saves results for each m-fold
+%    samLabelVec.classifier5(testIndex,:)=mFoldLabel;
+%    samScoreVec.classifier5(testIndex,:)=mFoldScore;
 
 end
 
@@ -119,7 +119,7 @@ kFoldErrorVecClassifier1=sum((samLabelVec.classifier1-trainLabelVec)~=0)/size(tr
 kFoldErrorVecClassifier2=sum((samLabelVec.classifier2-trainLabelVec)~=0)/size(trainLabelVec,1);
 kFoldErrorVecClassifier3=sum((samLabelVec.classifier3-trainLabelVec)~=0)/size(trainLabelVec,1);
 kFoldErrorVecClassifier4=sum((samLabelVec.classifier4-trainLabelVec)~=0)/size(trainLabelVec,1);
-kFoldErrorVecClassifier5=sum((samLabelVec.classifier4-trainLabelVec)~=0)/size(trainLabelVec,1);
+%kFoldErrorVecClassifier5=sum((samLabelVec.classifier4-trainLabelVec)~=0)/size(trainLabelVec,1);
 
 %% ROC curve
 figure;
@@ -155,10 +155,10 @@ xlabel('False positive rate')
 ylabel('True positive rate')
 AUCClassifier4 = AUC;
 
-[X,Y,T,AUC] = perfcurve(trainLabelVec,samScoreVec.classifier5(:,2),1);
-subplot(3,2,5)
-plot(X,Y)
-title([classifier_name{5},', AUC = ',num2str(AUC)])
-xlabel('False positive rate')
-ylabel('True positive rate')
-AUCClassifier5 = AUC;
+% [X,Y,T,AUC] = perfcurve(trainLabelVec,samScoreVec.classifier5(:,2),1);
+% subplot(3,2,5)
+% plot(X,Y)
+% title([classifier_name{5},', AUC = ',num2str(AUC)])
+% xlabel('False positive rate')
+% ylabel('True positive rate')
+% AUCClassifier5 = AUC;
