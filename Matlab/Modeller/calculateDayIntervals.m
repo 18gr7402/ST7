@@ -6,13 +6,13 @@ close all
 
 %% Fjern labels
 
-patientID=[hypodiabetesglukoseunitAdmitlabOffset.patientunitstayid];
-labResult=[hypodiabetesglukoseunitAdmitlabOffset.labresult];
-offset = [hypodiabetesglukoseunitAdmitlabOffset.labresultoffset];
+patientID=[nohypodiabetesglukoseunitAdmitlabOffset.patientunitstayid];
+labResult=[nohypodiabetesglukoseunitAdmitlabOffset.labresult];
+offset = [nohypodiabetesglukoseunitAdmitlabOffset.labresultoffset];
 
 %% Find unikke rows af patientid med tilhørende tid
-[~,idu] = unique(hypodiabetesglukoseunitAdmitlabOffset(:,1));
-uniqueRows = hypodiabetesglukoseunitAdmitlabOffset(idu,:);
+[~,idu] = unique(nohypodiabetesglukoseunitAdmitlabOffset(:,1));
+uniqueRows = nohypodiabetesglukoseunitAdmitlabOffset(idu,:);
 
 %% Find unikke rows af patient uden labes så det kan bruges til beregning
 [u] = unique(patientID);
@@ -41,4 +41,4 @@ for index=1:length(uniquePatient)
 end
 
 % Vi slutter med at samle data.
-allData = table(patientID,labResult,testDay);
+allGlucoseDataNoHypo = table(patientID,labResult,testDay);
