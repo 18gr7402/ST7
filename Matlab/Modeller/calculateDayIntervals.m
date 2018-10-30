@@ -1,42 +1,44 @@
 clc
 close all
 
-
 %% Opdeling af glukosemålinger på dage
 % load data
 
-%% Fjern labesl
+%% Fjern labels
 
-patient=[hypodiabetesglukoseunitAdmitlabOffset.patientunitstayid];   %Tilpas til data (med eller uden 'no')
-labresult=[hypodiabetesglukoseunitAdmitlabOffset.labresult];
+patientID=[hypodiabetesglukoseunitAdmitlabOffset.patientunitstayid];
+labResult=[hypodiabetesglukoseunitAdmitlabOffset.labresult];
 offset = [hypodiabetesglukoseunitAdmitlabOffset.labresultoffset];
-%unitAdmitTime = [hypodiabetesglukoseunitAdmitlabOffset.unitadmittime24];
 
+%% Find unikke rows af patientid med tilhørende tid
 [~,idu] = unique(hypodiabetesglukoseunitAdmitlabOffset(:,1));
 uniqueRows = hypodiabetesglukoseunitAdmitlabOffset(idu,:);
 
-%% Fjern patienter der kun har målinger for 1 døgn
-
-
-%% Find unikke
-[u] = unique(patient);
+%% Find unikke rows af patient uden labes så det kan bruges til beregning
+[u] = unique(patientID);
 uniquePatient = u;
 
+%% Løkke til opdeling af målinger for hver unikke patientid
+% Preallocate
+testDay = zeros(length(labResult),1);
+
 for index=1:length(uniquePatient)
-    timeIndex = uniqueRows(index,4);
-    [h,m] = hms(timeIndex.unitadmittime24);
+    timeIndex = uniqueRows(index,4);  % Find admit-time for patient 'index' 
+    [h,m] = hms(timeIndex.unitadmittime24);  % Omregn til timer og minutter
     tidIMin = 60*h+m;
     tidTilMidnat = 1440-tidIMin;
     
-    n=find(uniquePatient(index) == patient);
-    labTest(index).PatientID = uniquePatient(index);
-    labTest(index).( ['Day',num2str(1)]).('var') = labresult(n(find(offset(n)<tidTilMidnat)));
-
+    n=find(uniquePatient(index) == patientID); % Find de samples der tilhøre patient 'index'
+            
+    % Udregning af hvor mange dage patienten har data for. Der findes offset for den sidste måling (ved max(offset(n))). Dette divideres med 60*24 og rundes op.
     numberOfTestDays = ceil((max(offset(n))-tidTilMidnat)/1440);
     
+    % Løkke for opdeling af dag 1 indtil antallet af dag med test. De der hører til dag 0 er allerede 0.
     for i=0:numberOfTestDays-1
-        labTest(index).( ['Day',num2str(i+2)]).('var') = labresult(n(find((i*1440+tidTilMidnat) <= offset(n) & (i*1440+tidTilMidnat+1440) > offset(n))));
+    % Der findes de samples hvor patientens offset ligger over tidTilMidnat og under tidTilMadnat+(60*24). For hver iteration ligges i*(60*24) oveni begge for på den måde at skrifte til en ny dag. Dette gemmes hver gang på som dag(i+1).
+        testDay(n(find((i*1440+tidTilMidnat) <= offset(n) & (i*1440+tidTilMidnat+1440) > offset(n))))=i+1;
     end
-    
-    index = index + 1;
 end
+
+% Vi slutter med at samle data.
+allData = table(patientID,labResult,testDay);
