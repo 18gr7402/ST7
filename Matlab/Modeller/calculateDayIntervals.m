@@ -5,22 +5,18 @@ close all
 %% Opdeling af glukosemålinger på dage
 % load data
 
-
 %% Fjern labesl
 
 patient=[hypodiabetesglukoseunitAdmitlabOffset.patientunitstayid];   %Tilpas til data (med eller uden 'no')
 labresult=[hypodiabetesglukoseunitAdmitlabOffset.labresult];
 offset = [hypodiabetesglukoseunitAdmitlabOffset.labresultoffset];
-unitAdmitTime = [hypodiabetesglukoseunitAdmitlabOffset.unitadmittime24];
+%unitAdmitTime = [hypodiabetesglukoseunitAdmitlabOffset.unitadmittime24];
 
-% format3 = 'HH:MM:SS';
-% DateNumber3 = datenum(DateString,format3)sortedmat = sortrows(mat, 1);
 [~,idu] = unique(hypodiabetesglukoseunitAdmitlabOffset(:,1));
 uniqueRows = hypodiabetesglukoseunitAdmitlabOffset(idu,:);
 
 %% Fjern patienter der kun har målinger for 1 døgn
 
-%% Create struct
 
 %% Find unikke
 [u] = unique(patient);
@@ -34,13 +30,13 @@ for index=1:length(uniquePatient)
     
     n=find(uniquePatient(index) == patient);
     labTest(index).PatientID = uniquePatient(index);
-    labTest(index).( ['Day',num2str(1)]).('var') = find(offset(n)<tidTilMidnat);
+    labTest(index).( ['Day',num2str(1)]).('var') = labresult(find(offset(n)<tidTilMidnat));
 
     numberOfTestDays = ceil((max(offset(n))-tidTilMidnat)/1440);
     
     for i=0:numberOfTestDays-1
-        labTest(index).( ['Day',num2str(i+2)]).('var') = find((i*1440+tidTilMidnat) <= offset(n) & (i*1440+tidTilMidnat+1440) > offset(n));
+        labTest(index).( ['Day',num2str(i+2)]).('var') = labresult(find((i*1440+tidTilMidnat) <= offset(n) & (i*1440+tidTilMidnat+1440) > offset(n)));
     end
-    index = index + 1;
     
+    index = index + 1;
 end
