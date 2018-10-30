@@ -30,12 +30,12 @@ for index=1:length(uniquePatient)
     
     n=find(uniquePatient(index) == patient);
     labTest(index).PatientID = uniquePatient(index);
-    labTest(index).( ['Day',num2str(1)]).('var') = labresult(find(offset(n)<tidTilMidnat));
+    labTest(index).( ['Day',num2str(1)]).('var') = labresult(n(find(offset(n)<tidTilMidnat)));
 
     numberOfTestDays = ceil((max(offset(n))-tidTilMidnat)/1440);
     
     for i=0:numberOfTestDays-1
-        labTest(index).( ['Day',num2str(i+2)]).('var') = labresult(find((i*1440+tidTilMidnat) <= offset(n) & (i*1440+tidTilMidnat+1440) > offset(n)));
+        labTest(index).( ['Day',num2str(i+2)]).('var') = labresult(n(find((i*1440+tidTilMidnat) <= offset(n) & (i*1440+tidTilMidnat+1440) > offset(n))));
     end
     
     index = index + 1;
