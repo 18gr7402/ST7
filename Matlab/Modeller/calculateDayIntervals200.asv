@@ -89,14 +89,13 @@ equalPid = [equalPid testDay];
 
 %% Label data
 
-glucoseMeasurements = find(equalPid(:,2) == 69 | equalPid(:,2) == 79);
-glucoseMeasurementsUnder70 = equalPid(glucoseMeasurements,3)<=70;
-locationOfglucoseMeasurementsUnder70 = glucoseMeasurements(glucoseMeasurementsUnder70);
+n = find(equalPid(:,2) == 69 | equalPid(:,2) == 79);
+M = equalPid(find(equalPid(:,2) == 69 | equalPid(:,2) == 79),3)<=70;
+
+hej = n(M)
 
 %Preallocate
-label = zeros(length(equalPid),1);
-label(locationOfglucoseMeasurementsUnder70)=1;
+dataLabel = zeros(length(equalPid),1);
+dataLabel(hej)=1;
 
-%Save
-equalPid = [equalPid label];
 
