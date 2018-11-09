@@ -100,3 +100,9 @@ label(locationOfglucoseMeasurementsUnder70)=1;
 %Save
 equalPid = [equalPid label];
 
+%% Opsætning af data
+
+%PatientID og hvilken dag der er oplevet hypo
+hypoPatientDayInfo = [equalPid(locationOfglucoseMeasurementsUnder70,1) equalPid(locationOfglucoseMeasurementsUnder70,5)];
+
+
