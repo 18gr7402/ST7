@@ -11,7 +11,7 @@ close all
 data = rand200pidlab;
 
 %% Her fjernes alle rækker med negative labresultoffset og output gemmes i en ny tabel
-for i = 1:size(data, 1)
+for i = 1:size(data,1)
     ind(i) = all(data.labresultoffset(i) >= 0);
 end
 
@@ -132,21 +132,28 @@ for c=1:length(unique(dataTrim.labCategory))
     dataNAN(1,c) = sum(isnan(dataSamlet(:,c)));
 end
 
+thresholdForExcludingNAN = 200;
+
 figure
 bar(categoryOverview.LabName,dataNAN)
 title('Number of missing measurements');
 xlabel('Feature');
 ylabel('Number of NAN values');
 
-%% Korrelationsanalyse
-dataSamlet(isnan(dataSamlet))=0;
+dataSamletAfterNANExclusion = [dataSamlet(:,find(dataNAN <=200)),dataSamlet(:,length(unique(dataTrim.labCategory))+1)];
+categoryOverviewAfterNANExclusion = categoryOverview(find(dataNAN <=200),:);
 
-for i=1:length(unique(dataTrim.labCategory))
-correlation(1,i) = corr2(dataSamlet(:,i),dataSamlet(:,length(unique(dataTrim.labCategory))+1));
+%% Korrelationsanalyse
+
+dataSamletNANToZero = dataSamletAfterNANExclusion;
+dataSamletNANToZero(isnan(dataSamletNANToZero))=0;
+
+for i=1:length(unique(categoryOverviewAfterNANExclusion.LabCategory))
+    correlation(1,i) = corr2(dataSamletNANToZero(:,i),dataSamletNANToZero(:,size(dataSamletNANToZero,2)));
 end
 
 figure
-bar(categoryOverview.LabName,abs(correlation))
+bar(categoryOverviewAfterNANExclusion.LabName,abs(correlation))
 title('Overview of correlation between feature and class label');
 xlabel('Feature');
 ylabel('Correlation coefficient');
