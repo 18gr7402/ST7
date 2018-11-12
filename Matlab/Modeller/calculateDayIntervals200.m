@@ -132,21 +132,29 @@ for c=1:length(unique(dataTrim.labCategory))
     dataNAN(1,c) = sum(isnan(dataSamlet(:,c)));
 end
 
-thresholdForExcludingNAN = 200;
-
 figure
 bar(categoryOverview.LabName,dataNAN)
 title('Number of missing measurements');
 xlabel('Feature');
 ylabel('Number of NAN values');
 
-dataSamletAfterNANExclusion = [dataSamlet(:,find(dataNAN <=200)),dataSamlet(:,length(unique(dataTrim.labCategory))+1)];
-categoryOverviewAfterNANExclusion = categoryOverview(find(dataNAN <=200),:);
+dataNANprocent = 100*(dataNAN./length(dataSamlet));
+
+figure
+bar(categoryOverview.LabName,dataNANprocent)
+title('Procent of missing measurements');
+xlabel('Feature');
+ylabel('Procent of NAN values');
+
+thresholdForExcludingNAN = 1000;
+
+dataSamletAfterNANExclusion = [dataSamlet(:,find(dataNAN <=thresholdForExcludingNAN)),dataSamlet(:,length(unique(dataTrim.labCategory))+1)];
+categoryOverviewAfterNANExclusion = categoryOverview(find(dataNAN <=thresholdForExcludingNAN),:);
 
 %% Korrelationsanalyse
 
 dataSamletNANToZero = dataSamletAfterNANExclusion;
-dataSamletNANToZero(isnan(dataSamletNANToZero))=0;
+dataSamletNANToZero(isnan(dataSamletNANToZero))=0; 
 
 for i=1:length(unique(categoryOverviewAfterNANExclusion.LabCategory))
     correlation(1,i) = corr2(dataSamletNANToZero(:,i),dataSamletNANToZero(:,size(dataSamletNANToZero,2)));
