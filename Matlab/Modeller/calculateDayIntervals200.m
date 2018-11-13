@@ -164,20 +164,25 @@ for i=1:length(uniquePatient)
     % Save label
     hypoDays = hypoPatientDayInfo(find(hypoPatientDayInfo==patientId),2);
         
-    for day=1:maxNumberOfDays
-        patientDayInfo = patientInfo(find(patientInfo.testDay==day),:);
-        for index=1:length(unique(dataTrim.labCategory));
-            dataSamlet(row,index)=mean(patientDayInfo.labresult(find(patientDayInfo.labCategory==index)));
+        for day=1:maxNumberOfDays
+            
+           %Test om der er glukosemåling dagen efter.
+           if ~isempty(find(day+1 == patientInfo.testDay(ismember(infoLocation,glucoseMeasurements))))
+               
+           patientDayInfo = patientInfo(find(patientInfo.testDay==day),:);
+                for index=1:length(unique(dataTrim.labCategory));
+                dataSamlet(row,index)=nanmean(patientDayInfo.labresult(find(patientDayInfo.labCategory==index)));
+                end
+        
+            % Check om hypo i morgen
+            isHypoTomorrow = ~isempty(find(hypoDays == day+1));
+            % Gem label
+            dataSamlet(row,1+length(unique(dataTrim.labCategory)))=isHypoTomorrow;
+        
+            % Tæl op til næste række
+            row = row + 1;
+            end
         end
-        
-        % Check om hypo i morgen
-        isHypoTomorrow = ~isempty(find(hypoDays == day+1));
-        % Gem label
-        dataSamlet(row,1+length(unique(dataTrim.labCategory)))=isHypoTomorrow;
-        
-        % Tæl op til næste række
-        row = row + 1;
-    end
     end
 end
 
@@ -201,18 +206,16 @@ title('Procent of missing measurements');
 xlabel('Feature');
 ylabel('Procent of NAN values');
 
-thresholdForExcludingNAN = 100;
+thresholdForExcludingNAN = 1000;
 
 dataSamletAfterNANExclusion = [dataSamlet(:,find(dataNAN <=thresholdForExcludingNAN)),dataSamlet(:,length(unique(dataTrim.labCategory))+1)];
 categoryOverviewAfterNANExclusion = categoryOverview(find(dataNAN <=thresholdForExcludingNAN),:);
 
 %% Korrelationsanalyse
 
-dataSamletNANToZero = dataSamletAfterNANExclusion;
-dataSamletNANToZero(isnan(dataSamletNANToZero))=0; 
-
 for i=1:length(unique(categoryOverviewAfterNANExclusion.LabCategory))
-    correlation(i,1) = abs(corr2(dataSamletNANToZero(:,i),dataSamletNANToZero(:,size(dataSamletNANToZero,2))));
+    ind = ~isnan(dataSamletAfterNANExclusion(:,i));
+    correlation(i,1) = abs(corr2(dataSamletAfterNANExclusion(ind,i),dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2))));
 end
 
 figure
@@ -221,27 +224,28 @@ title('Overview of correlation between feature and class label');
 xlabel('Feature');
 ylabel('Correlation coefficient');
 
-% %% Vælg de endelige features og gør data klar til at eksportere
-% 
-% numberOfChosenFeatures = 10;
-% 
-% correlationCategoryOverview = [categoryOverviewAfterNANExclusion, table(correlation)];
-% 
-% [~,idx] = sort(correlationCategoryOverview.correlation,'descend');
-% correlationCategoryFinal = correlationCategoryOverview(idx,:);
-% correlationCategoryFinal = correlationCategoryFinal(1:numberOfChosenFeatures,:);
-% 
-% %varName = {cellstr(string(correlationCategoryFinal.LabName(1)))};
-% varName = {'hej'};
-% T = table('VariableNames',varName);
-% T = table(dataSamlet(:,correlationCategoryFinal.LabCategory(1)));
-% for i=1:numberOfChosenFeatures-1
-%    varName = {cellstr(string(correlationCategoryFinal.LabName(i+1)))};
-%    T = [T table(dataSamlet(:,correlationCategoryFinal.LabCategory(i+1)),'VariableNames',varName)];
-% end
-% 
-% hej = table(dataSamlet(:,correlationCategoryFinal.LabCategory));
-% %varNames = {cellstr(string(correlationCategoryFinal.LabName(i+1)))};
-% %,'VariableNames',varNames
-% dataFinal = [table(dataSamlet(:,correlationCategoryFinal.LabCategory)),table(dataSamletNANToZero)];
+%% Vælg de endelige features og gør data klar til at eksportere
 
+%  numberOfChosenFeatures = 10;
+% % 
+%  correlationCategoryOverview = [categoryOverviewAfterNANExclusion, table(correlation)];
+%  
+%  [~,idx] = sort(correlationCategoryOverview.correlation,'descend');
+%  correlationCategoryFinal = correlationCategoryOverview(idx,:);
+%  correlationCategoryFinal = correlationCategoryFinal(1:numberOfChosenFeatures,:);
+% % 
+% varNames = cellstr(string(correlationCategoryFinal.LabName));
+% % varName = {'hej'};
+% % T = table('VariableNames',varName);
+% % T = table(dataSamlet(:,correlationCategoryFinal.LabCategory(1)));
+% % for i=1:numberOfChosenFeatures-1
+% %    varName = {cellstr(string(correlationCategoryFinal.LabName(i+1)))};
+% %    T = [T table(dataSamlet(:,correlationCategoryFinal.LabCategory(i+1)),'VariableNames',varName)];
+% % end
+% % 
+% % % hej = table(dataSamlet(:,correlationCategoryFinal.LabCategory));
+% % % %varNames = {cellstr(string(correlationCategoryFinal.LabName(i+1)))};
+% % % %,'VariableNames',varNames
+% % % dataFinal = [table(dataSamlet(:,correlationCategoryFinal.LabCategory)),table(dataSamletNANToZero)];
+% 
+% T = array2table(dataSamlet(:,correlationCategoryFinal.LabCategory),'VariableNames',varNames);
