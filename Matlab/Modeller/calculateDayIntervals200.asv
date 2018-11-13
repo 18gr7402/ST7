@@ -221,27 +221,22 @@ title('Overview of correlation between feature and class label');
 xlabel('Feature');
 ylabel('Correlation coefficient');
 
-% %% Vælg de endelige features og gør data klar til at eksportere
-% 
-% numberOfChosenFeatures = 10;
-% 
-% correlationCategoryOverview = [categoryOverviewAfterNANExclusion, table(correlation)];
-% 
-% [~,idx] = sort(correlationCategoryOverview.correlation,'descend');
-% correlationCategoryFinal = correlationCategoryOverview(idx,:);
-% correlationCategoryFinal = correlationCategoryFinal(1:numberOfChosenFeatures,:);
-% 
-% %varName = {cellstr(string(correlationCategoryFinal.LabName(1)))};
-% varName = {'hej'};
-% T = table('VariableNames',varName);
-% T = table(dataSamlet(:,correlationCategoryFinal.LabCategory(1)));
-% for i=1:numberOfChosenFeatures-1
-%    varName = {cellstr(string(correlationCategoryFinal.LabName(i+1)))};
-%    T = [T table(dataSamlet(:,correlationCategoryFinal.LabCategory(i+1)),'VariableNames',varName)];
-% end
-% 
-% hej = table(dataSamlet(:,correlationCategoryFinal.LabCategory));
-% %varNames = {cellstr(string(correlationCategoryFinal.LabName(i+1)))};
-% %,'VariableNames',varNames
-% dataFinal = [table(dataSamlet(:,correlationCategoryFinal.LabCategory)),table(dataSamletNANToZero)];
+%% Vælg de endelige features og gør data klar til at eksportere
+
+numberOfChosenFeatures = 10;
+
+correlationCategoryOverview = [categoryOverviewAfterNANExclusion, table(correlation)];
+
+[~,idx] = sort(correlationCategoryOverview.correlation,'descend');
+correlationCategoryFinal = correlationCategoryOverview(idx,:);
+correlationCategoryFinal = correlationCategoryFinal(1:numberOfChosenFeatures,:);
+
+for i=1:numberOfChosenFeatures
+    
+end
+
+hej = table(dataSamlet(:,correlationCategoryFinal.LabCategory));
+%varNames = {cellstr(string(correlationCategoryFinal.LabName))'};
+%,'VariableNames',varNames
+dataFinal = [table(dataSamlet(:,correlationCategoryFinal.LabCategory)),table(dataSamletNANToZero)];
 
