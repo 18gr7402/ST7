@@ -13,7 +13,7 @@ data = rand200pidlab;
 
 %% Her fjernes alle rækker med negative labresultoffset og output gemmes i en ny tabel
 for i = 1:size(data,1)
-    ind(i) = all(data.labresultoffset(i) >= 0);
+    ind(i) = all(data.resultoffset(i) >= 0);
 end
 
 dataUNeg = data(ind, :);
@@ -24,7 +24,7 @@ numUniPidUNeg = size(unique(dataUNeg.patientunitstayid),1);
 
 %% Find patienterne med en eller flere glucosemåling(er) - glucose = category 79 og bedside glucose = category 69
 for i = 1:size(dataUNeg.patientunitstayid)
-    idx(i) = all(dataUNeg.labname(i) == 'bedside glucose' | all(dataUNeg.labname(i) == 'glucose'));
+    idx(i) = all(dataUNeg.name(i) == 'bedside glucose' | all(dataUNeg.name(i) == 'glucose'));
 end
 
 dataUNegOnlyGlu = dataUNeg(idx, :);
@@ -45,7 +45,7 @@ uniqueDataTrimPatientID = dataTrim(idu,:);
 
 %% Løkke til opdeling af målinger for hver unikke patientid
 % Preallocate
-testDay = zeros(length(dataTrim.labresult),1);
+testDay = zeros(length(dataTrim.result),1);
 
 for index=1:length(uniquePatient)
     timeIndex = uniqueDataTrimPatientID.unitadmittime24(index);  % Find admit-time for patient 'index' 
@@ -56,12 +56,12 @@ for index=1:length(uniquePatient)
     n=find(uniquePatient(index) == dataTrim.patientunitstayid); % Find de samples der tilhøre patient 'index'
             
     % Udregning af hvor mange dage patienten har data for. Der findes offset for den sidste måling (ved max(offset(n))). Dette divideres med 60*24 og rundes op.
-    numberOfTestDays = ceil((max(dataTrim.labresultoffset(n))-tidTilMidnat)/1440);
+    numberOfTestDays = ceil((max(dataTrim.resultoffset(n))-tidTilMidnat)/1440);
     
     % Løkke for opdeling af dag 1 indtil antallet af dag med test. De der hører til dag 0 er allerede 0.
     for day=1:numberOfTestDays
     % Der findes de samples hvor patientens offset ligger over tidTilMidnat og under tidTilMadnat+(60*24). For hver iteration ligges i*(60*24) oveni begge for på den måde at skrifte til en ny dag. Dette gemmes hver gang på som dag(i+1).
-        testDay(n(find(((day-1)*1440+tidTilMidnat) <= dataTrim.labresultoffset(n) & ((day-1)*1440+tidTilMidnat+1440) > dataTrim.labresultoffset(n))))=(day-1)+1;
+        testDay(n(find(((day-1)*1440+tidTilMidnat) <= dataTrim.resultoffset(n) & ((day-1)*1440+tidTilMidnat+1440) > dataTrim.resultoffset(n))))=(day-1)+1;
     end
 end
 
@@ -70,12 +70,12 @@ dataTrim = [dataTrim table(testDay)];
 
 %% Label data
 
-glucoseMeasurements = find(dataTrim.labname == 'bedside glucose' | dataTrim.labname == 'glucose');
-glucoseMeasurementsUnder70 = dataTrim.labresult(glucoseMeasurements)<=70;
+glucoseMeasurements = find(dataTrim.name == 'bedside glucose' | dataTrim.name == 'glucose');
+glucoseMeasurementsUnder70 = dataTrim.result(glucoseMeasurements)<=70;
 locationOfglucoseMeasurementsUnder70 = glucoseMeasurements(glucoseMeasurementsUnder70);
 
 %Preallocate
-label = zeros(size(dataTrim.labresult,1),1);
+label = zeros(size(dataTrim.result,1),1);
 label(locationOfglucoseMeasurementsUnder70)=1;
 
 %Save
@@ -87,10 +87,10 @@ dataTrim = [dataTrim table(label)];
 hypoPatientDayInfo = [dataTrim.patientunitstayid(locationOfglucoseMeasurementsUnder70) dataTrim.testDay(locationOfglucoseMeasurementsUnder70)];
 
 %Indexer labname til talrepresentationer
-category = categorical(string(dataTrim.labname));
-dataTrim.labCategory = grp2idx(category);
-varNames = {'LabName','LabCategory'};
-categoryOverview = table(unique(category),unique(dataTrim.labCategory),'VariableNames',varNames);
+category = categorical(string(dataTrim.name));
+dataTrim.Category = grp2idx(category);
+varNames = {'Name','Category'};
+categoryOverview = table(unique(category),unique(dataTrim.Category),'VariableNames',varNames);
 
 %Preallocate
 numberOfDaysIncluded = 5;
@@ -136,10 +136,10 @@ numberOfDaysIncluded = 5;
 hypoPatientDayInfo = [dataTrim.patientunitstayid(locationOfglucoseMeasurementsUnder70) dataTrim.testDay(locationOfglucoseMeasurementsUnder70)];
 
 %Indexer labname til talrepresentationer
-category = categorical(string(dataTrim.labname));
-dataTrim.labCategory = grp2idx(category);
-varNames = {'LabName','LabCategory'};
-categoryOverview = table(unique(category),unique(dataTrim.labCategory),'VariableNames',varNames);
+category = categorical(string(dataTrim.name));
+dataTrim.Category = grp2idx(category);
+varNames = {'Name','Category'};
+categoryOverview = table(unique(category),unique(dataTrim.Category),'VariableNames',varNames);
 
 numberOfDaysIncluded = 5;
 
@@ -170,14 +170,14 @@ for i=1:length(uniquePatient)
            if ~isempty(find(day+1 == patientInfo.testDay(ismember(infoLocation,glucoseMeasurements))))
                
            patientDayInfo = patientInfo(find(patientInfo.testDay==day),:);
-                for index=1:length(unique(dataTrim.labCategory));
-                dataSamlet(row,index)=nanmean(patientDayInfo.labresult(find(patientDayInfo.labCategory==index)));
+                for index=1:length(unique(dataTrim.Category));
+                dataSamlet(row,index)=nanmean(patientDayInfo.result(find(patientDayInfo.Category==index)));
                 end
         
             % Check om hypo i morgen
             isHypoTomorrow = ~isempty(find(hypoDays == day+1));
             % Gem label
-            dataSamlet(row,1+length(unique(dataTrim.labCategory)))=isHypoTomorrow;
+            dataSamlet(row,1+length(unique(dataTrim.Category)))=isHypoTomorrow;
         
             % Tæl op til næste række
             row = row + 1;
@@ -188,12 +188,12 @@ end
 
 %% Antal af NAN plot
 
-for c=1:length(unique(dataTrim.labCategory))
+for c=1:length(unique(dataTrim.Category))
     dataNAN(1,c) = sum(isnan(dataSamlet(:,c)));
 end
 
 figure
-bar(categoryOverview.LabName,dataNAN)
+bar(categoryOverview.Name,dataNAN)
 title('Number of missing measurements');
 xlabel('Feature');
 ylabel('Number of NAN values');
@@ -201,25 +201,25 @@ ylabel('Number of NAN values');
 dataNANprocent = 100*(dataNAN./length(dataSamlet));
 
 figure
-bar(categoryOverview.LabName,dataNANprocent)
+bar(categoryOverview.Name,dataNANprocent)
 title('Procent of missing measurements');
 xlabel('Feature');
 ylabel('Procent of NAN values');
 
 thresholdForExcludingNAN = 1000;
 
-dataSamletAfterNANExclusion = [dataSamlet(:,find(dataNAN <=thresholdForExcludingNAN)),dataSamlet(:,length(unique(dataTrim.labCategory))+1)];
+dataSamletAfterNANExclusion = [dataSamlet(:,find(dataNAN <=thresholdForExcludingNAN)),dataSamlet(:,length(unique(dataTrim.Category))+1)];
 categoryOverviewAfterNANExclusion = categoryOverview(find(dataNAN <=thresholdForExcludingNAN),:);
 
 %% Korrelationsanalyse
 
-for i=1:length(unique(categoryOverviewAfterNANExclusion.LabCategory))
+for i=1:length(unique(categoryOverviewAfterNANExclusion.Category))
     ind = ~isnan(dataSamletAfterNANExclusion(:,i));
     correlation(i,1) = abs(corr2(dataSamletAfterNANExclusion(ind,i),dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2))));
 end
 
 figure
-bar(categoryOverviewAfterNANExclusion.LabName,correlation)
+bar(categoryOverviewAfterNANExclusion.Name,correlation)
 title('Overview of correlation between feature and class label');
 xlabel('Feature');
 ylabel('Correlation coefficient');
