@@ -1,19 +1,20 @@
 clc
 close all
-clearvars -except rand200pidlab
+clear
+%clearvars -except rand200pidlab
 
 %% Hent data, ekskluder patienter, label data og opdeling data på dage pr. patient
 
 %% Load data 
-%load('rand200pidlab');
+load('FeatureLabelTabel500');
 
 %% Dupliker data så vi regner videre på en ny variabel
 
-data = rand200pidlab;
+data = FeatureLabelTabel;
 
 %% Her fjernes alle rækker med negative labresultoffset og output gemmes i en ny tabel
 for i = 1:size(data,1)
-    ind(i) = all(data.resultoffset(i) >= 0);
+    ind(i) = all(data.offset(i) >= 0);
 end
 
 dataUNeg = data(ind, :);
