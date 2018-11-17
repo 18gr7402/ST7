@@ -57,12 +57,12 @@ for index=1:length(uniquePatient)
     n=find(uniquePatient(index) == dataTrim.patientunitstayid); % Find de samples der tilhøre patient 'index'
             
     % Udregning af hvor mange dage patienten har data for. Der findes offset for den sidste måling (ved max(offset(n))). Dette divideres med 60*24 og rundes op.
-    numberOfTestDays = ceil((max(dataTrim.resultoffset(n))-tidTilMidnat)/1440);
+    numberOfTestDays = ceil((max(dataTrim.offset(n))-tidTilMidnat)/1440);
     
     % Løkke for opdeling af dag 1 indtil antallet af dag med test. De der hører til dag 0 er allerede 0.
     for day=1:numberOfTestDays
     % Der findes de samples hvor patientens offset ligger over tidTilMidnat og under tidTilMadnat+(60*24). For hver iteration ligges i*(60*24) oveni begge for på den måde at skrifte til en ny dag. Dette gemmes hver gang på som dag(i+1).
-        testDay(n(find(((day-1)*1440+tidTilMidnat) <= dataTrim.resultoffset(n) & ((day-1)*1440+tidTilMidnat+1440) > dataTrim.resultoffset(n))))=(day-1)+1;
+        testDay(n(find(((day-1)*1440+tidTilMidnat) <= dataTrim.offset(n) & ((day-1)*1440+tidTilMidnat+1440) > dataTrim.offset(n))))=(day-1)+1;
     end
 end
 
@@ -97,7 +97,7 @@ categoryOverview = table(unique(category),unique(dataTrim.Category),'VariableNam
 numberOfDaysIncluded = 5;
 
 %% Opsætning af data til dataoversigt
-% dataOversigt = zeros(length(uniquePatient),(1+length(unique(dataTrim.labCategory))*numberOfDaysIncluded));
+% dataOversigt = zeros(length(uniquePatient),(1+length(unique(dataTrim.Category))*numberOfDaysIncluded));
 % 
 % for i=1:length(uniquePatient)
 %     % Find info for hver person
@@ -120,14 +120,14 @@ numberOfDaysIncluded = 5;
 %     
 %     for day=1:maxNumberOfDays
 %         patientDayInfo = patientInfo(find(patientInfo.testDay==day),:);
-%         for index=1:length(unique(dataTrim.labCategory));
-%             dataOversigt(i,index+1+((day-1)*(length(unique(dataTrim.labCategory))+1)))=mean(patientDayInfo.labresult(find(patientDayInfo.labCategory==index)));
+%         for index=1:length(unique(dataTrim.Category));
+%             dataOversigt(i,index+1+((day-1)*(length(unique(dataTrim.Category))+1)))=mean(patientDayInfo.result(find(patientDayInfo.Category==index)));
 %         end
 %         
 %         % Check om hypo i morgen
 %         isHypoTomorrow = ~isempty(find(hypoDays == day+1));
 %         % Gem label
-%         dataOversigt(i,1+((1+length(unique(dataTrim.labCategory)))*day))=isHypoTomorrow;
+%         dataOversigt(i,1+((1+length(unique(dataTrim.Category)))*day))=isHypoTomorrow;
 %     end
 % end
 
@@ -207,7 +207,7 @@ title('Procent of missing measurements');
 xlabel('Feature');
 ylabel('Procent of NAN values');
 
-thresholdForExcludingNAN = 1000;
+thresholdForExcludingNAN = 500;
 
 dataSamletAfterNANExclusion = [dataSamlet(:,find(dataNAN <=thresholdForExcludingNAN)),dataSamlet(:,length(unique(dataTrim.Category))+1)];
 categoryOverviewAfterNANExclusion = categoryOverview(find(dataNAN <=thresholdForExcludingNAN),:);
@@ -217,6 +217,7 @@ categoryOverviewAfterNANExclusion = categoryOverview(find(dataNAN <=thresholdFor
 for i=1:length(unique(categoryOverviewAfterNANExclusion.Category))
     ind = ~isnan(dataSamletAfterNANExclusion(:,i));
     correlation(i,1) = abs(corr2(dataSamletAfterNANExclusion(ind,i),dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2))));
+    isGaussianDistribution(i,1) = kstest((dataSamletAfterNANExclusion(ind,i)));
 end
 
 figure
