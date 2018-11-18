@@ -214,11 +214,22 @@ categoryOverviewAfterNANExclusion = categoryOverview(find(dataNAN <=thresholdFor
 
 %% Korrelationsanalyse
 
+
 for i=1:length(unique(categoryOverviewAfterNANExclusion.Category))
     ind = ~isnan(dataSamletAfterNANExclusion(:,i));
+    dataForAnalysis(1+((i-1)*(length(dataSamletAfterNANExclusion))):length(dataSamletAfterNANExclusion)+((i-1)*(length(dataSamletAfterNANExclusion))),1) = dataSamletAfterNANExclusion(:,i);
+    dataForAnalysis(1+((i-1)*(length(dataSamletAfterNANExclusion))):length(dataSamletAfterNANExclusion)+((i-1)*(length(dataSamletAfterNANExclusion))),2) = categoryOverviewAfterNANExclusion.Name(i);
+    %Test for correlation
     correlation(i,1) = abs(corr2(dataSamletAfterNANExclusion(ind,i),dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2))));
+    %Test for normal distribution: h = kstest(x) returns a test decision for the null hypothesis that the data in vector x comes from a standard normal distribution, against the alternative that it does not come from such a distribution, using the one-sample Kolmogorov-Smirnov test. The result h is 1 if the test rejects the null hypothesis at the 5% significance level, or 0 otherwise.
     isGaussianDistribution(i,1) = kstest((dataSamletAfterNANExclusion(ind,i)));
+    %Test for outliers så det kan sammenholdes med total antal: 
+    isOutlier(i,1) = sum(isoutlier((dataSamletAfterNANExclusion(ind,i))));
+    isOutlier(i,2) = length(dataSamletAfterNANExclusion(ind,i));
 end
+% Test for equal variance: vartestn(x) returns a summary table of statistics and a box plot for a Bartlett test of the null hypothesis that the columns of data vector x come from normal distributions with the same variance. The alternative hypothesis is that not all columns of data have the same variance.
+%A low -value, p = 0, indicates that vartestn rejects the null hypothesis that the variances are equal across all five columns, in favor of the alternative hypothesis that at least one column has a different variance.
+    vartestn(dataForAnalysis(:,1),dataForAnalysis(:,2))
 
 figure
 bar(categoryOverviewAfterNANExclusion.Name,correlation)
