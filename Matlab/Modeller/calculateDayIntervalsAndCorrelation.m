@@ -229,7 +229,7 @@ for i=1:length(unique(categoryOverviewAfterNANExclusion.Category))
 end
 % Test for equal variance: vartestn(x) returns a summary table of statistics and a box plot for a Bartlett test of the null hypothesis that the columns of data vector x come from normal distributions with the same variance. The alternative hypothesis is that not all columns of data have the same variance.
 %A low -value, p = 0, indicates that vartestn rejects the null hypothesis that the variances are equal across all five columns, in favor of the alternative hypothesis that at least one column has a different variance.
-    vartestn(dataForAnalysis(:,1),dataForAnalysis(:,2))
+    vartestn(dataForAnalysis(:,1),dataForAnalysis(:,2),'TestType','LeveneAbsolute')
 
 figure
 bar(categoryOverviewAfterNANExclusion.Name,correlation)
