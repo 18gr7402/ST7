@@ -269,24 +269,24 @@ ylabel('Correlation coefficient');
 
 %% Vælg de endelige features og gør data klar til at eksportere
 
-numberOfChosenFeatures = 10;
-
-correlationCategoryOverview = [categoryOverviewAfterNANExclusion, table(Correlation)];
-
-[~,idx] = sort(correlationCategoryOverview.Correlation,'descend');
-correlationCategoryFinal = correlationCategoryOverview(idx,:);
-correlationCategoryFinal = correlationCategoryFinal(1:numberOfChosenFeatures,:);
-
-%LAPPELØSNING
-correlationCategoryFinal.Name(4) = 'O2Sat';
-correlationCategoryFinal.Name(7) = 'bedsideGlucose';
-
-finalFeatures = correlationCategoryFinal.Category;
-
-varNames = [cellstr(string(correlationCategoryFinal.Name)'),'Label'];
-
-%Sorry, dette er ikke smart. MEN det er ikke tiden værd at finde ud af
-%dette. Antallet af variable skal skrives manuelt.
-dataFinal = table(dataSamlet(:,finalFeatures(1)),dataSamlet(:,finalFeatures(2)),dataSamlet(:,finalFeatures(3)),dataSamlet(:,finalFeatures(4)),dataSamlet(:,finalFeatures(5)),dataSamlet(:,finalFeatures(6)),dataSamlet(:,finalFeatures(7)),dataSamlet(:,finalFeatures(8)),dataSamlet(:,finalFeatures(9)),dataSamlet(:,finalFeatures(10)),dataSamlet(:,size(dataSamlet,2)),'VariableNames',varNames);
+% numberOfChosenFeatures = 10;
+% 
+% correlationCategoryOverview = [categoryOverviewAfterNANExclusion, table(Correlation)];
+% 
+% [~,idx] = sort(correlationCategoryOverview.Correlation,'descend');
+% correlationCategoryFinal = correlationCategoryOverview(idx,:);
+% correlationCategoryFinal = correlationCategoryFinal(1:numberOfChosenFeatures,:);
+% 
+% %LAPPELØSNING
+% correlationCategoryFinal.Name(4) = 'O2Sat';
+% correlationCategoryFinal.Name(7) = 'bedsideGlucose';
+% 
+% finalFeatures = correlationCategoryFinal.Category;
+% 
+% varNames = [cellstr(string(correlationCategoryFinal.Name)'),'Label'];
+% 
+% %Sorry, dette er ikke smart. MEN det er ikke tiden værd at finde ud af
+% %dette. Antallet af variable skal skrives manuelt.
+% dataFinal = table(dataSamlet(:,finalFeatures(1)),dataSamlet(:,finalFeatures(2)),dataSamlet(:,finalFeatures(3)),dataSamlet(:,finalFeatures(4)),dataSamlet(:,finalFeatures(5)),dataSamlet(:,finalFeatures(6)),dataSamlet(:,finalFeatures(7)),dataSamlet(:,finalFeatures(8)),dataSamlet(:,finalFeatures(9)),dataSamlet(:,finalFeatures(10)),dataSamlet(:,size(dataSamlet,2)),'VariableNames',varNames);
 
 
