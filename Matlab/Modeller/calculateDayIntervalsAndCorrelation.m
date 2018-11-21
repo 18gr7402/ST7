@@ -239,35 +239,46 @@ for i=1:length(unique(categoryOverviewAfterNANExclusion.Category))
     labelAfterNANExclusionNoNANNoOutlier = labelAfterNANExclusionNoNAN(logical(index));
     
     % Analyser
-    %The Levene, Brown-Forsythe, and O’Brien tests are less sensitive to departures from normality than Bartlett’s test, so they are useful alternatives if you suspect the samples come from nonnormal distributions.
-    %[p] = vartestn(dataSamletAfterNANExclusion(ind,i),dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2)),'TestType','LeveneAbsolute','Display','off');
-    [h,p] = vartest2(dataTemp1,dataTemp0);
-    isEqualVariance(i,1) = h;
-    isEqualVariance(i,2) = p;
-    
-    %Test for correlation
-    Correlation(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNAN,labelAfterNANExclusionNoNAN));
-    CorrelationNoOutliers(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNANNoOutlier,labelAfterNANExclusionNoNANNoOutlier));
-    
     %Test for normal distribution: h = kstest(x) returns a test decision for the null hypothesis that the data in vector x comes from a standard normal distribution, against the alternative that it does not come from such a distribution, using the one-sample Kolmogorov-Smirnov test. The result h is 1 if the test rejects the null hypothesis at the 5% significance level, or 0 otherwise.
-    isGaussianDistribution(i,1) = jbtest(dataTemp1,0.001);
-    isGaussianDistribution(i,2) = jbtest(dataTemp0,0.001);
-    isGaussianDistributionNoOutliers(i,1) = jbtest(dataTemp1(~isoutlier(dataTemp1,'mean'),1),0.001);
-    isGaussianDistributionNoOutliers(i,2) = jbtest(dataTemp0(~isoutlier(dataTemp0,'mean'),1),0.001);
+    isGaussianDistribution(i,1) = jbtest(dataTemp1);
+    isGaussianDistribution(i,2) = jbtest(dataTemp0);
+    isGaussianDistributionNoOutliers(i,1) = jbtest(dataTemp1(~isoutlier(dataTemp1,'mean'),1));
+    isGaussianDistributionNoOutliers(i,2) = jbtest(dataTemp0(~isoutlier(dataTemp0,'mean'),1));
 %      figure
-%      normplot(dataTemp1);
+%      normplot(dataTemp1(~isoutlier(dataTemp1,'mean'),1));
 %      figure
-%      hist(dataTemp1,10);
+%      hist(dataTemp1(~isoutlier(dataTemp1,'mean'),1),10);
 %      figure
-%      normplot(dataTemp0);
+%      normplot(dataTemp0(~isoutlier(dataTemp0,'mean'),1));
 %      figure
-%      hist(dataTemp0,40);
+%      hist(dataTemp0(~isoutlier(dataTemp0,'mean'),1),40);
      
     %Test for outliers så det kan sammenholdes med total antal: TF = isoutlier(A) returns a logical array whose elements are true when an outlier is detected in the corresponding element of A. By default, an outlier is a value that is more than three scaled median absolute deviations (MAD) away from the median. If A is a matrix or table, then isoutlier operates on each column separately. If A is a multidimensional array, then isoutlier operates along the first dimension whose size does not equal 1.
     isOutlier(i,1) = sum(isoutlier(dataTemp1,'mean'));
     isOutlier(i,2) = length(dataTemp1);
     isOutlier(i,3) = sum(isoutlier(dataTemp0,'mean'));
     isOutlier(i,4) = length(dataTemp0);
+    
+    %The Levene, Brown-Forsythe, and O’Brien tests are less sensitive to departures from normality than Bartlett’s test, so they are useful alternatives if you suspect the samples come from nonnormal distributions.
+    %[p] = vartestn(dataSamletAfterNANExclusion(ind,i),dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2)),'TestType','LeveneAbsolute','Display','off');
+    %[h,p] = vartest2(dataTemp1,dataTemp0);
+    %isEqualVariance(i,1) = h;
+    %isEqualVariance(i,2) = p;
+    
+    [h,p] = vartest2(dataTemp1(~isoutlier(dataTemp1,'mean'),1),dataTemp0(~isoutlier(dataTemp0,'mean'),1));
+    isEqualVariance(i,1) = h;
+    isEqualVariance(i,2) = p;
+    
+    figure
+    subplot(1,2,1)
+    boxplot(dataTemp1(~isoutlier(dataTemp1,'mean'),1))
+    subplot(1,2,2)
+    boxplot(dataTemp0(~isoutlier(dataTemp0,'mean'),1))
+    %axis([0 2 0 15])
+    
+    %Test for correlation
+    %Correlation(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNAN,labelAfterNANExclusionNoNAN));
+    CorrelationNoOutliers(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNANNoOutlier,labelAfterNANExclusionNoNANNoOutlier));
 end
 % Test for equal variance: vartestn(x) returns a summary table of statistics and a box plot for a Bartlett test of the null hypothesis that the columns of data vector x come from normal distributions with the same variance. The alternative hypothesis is that not all columns of data have the same variance.
 % A low -value, p = 0, indicates that vartestn rejects the null hypothesis that the variances are equal across all five columns, in favor of the alternative hypothesis that at least one column has a different variance.
@@ -294,24 +305,25 @@ ylabel('Correlation coefficient');
 
 %% Vælg de endelige features og gør data klar til at eksportere
 
-% numberOfChosenFeatures = 10;
-% 
-% correlationCategoryOverview = [categoryOverviewAfterNANExclusion, table(Correlation)];
-% 
-% [~,idx] = sort(correlationCategoryOverview.Correlation,'descend');
-% correlationCategoryFinal = correlationCategoryOverview(idx,:);
-% correlationCategoryFinal = correlationCategoryFinal(1:numberOfChosenFeatures,:);
-% 
-% %LAPPELØSNING
-% correlationCategoryFinal.Name(4) = 'O2Sat';
-% correlationCategoryFinal.Name(7) = 'bedsideGlucose';
-% 
-% finalFeatures = correlationCategoryFinal.Category;
-% 
-% varNames = [cellstr(string(correlationCategoryFinal.Name)'),'Label'];
+numberOfChosenFeatures = 10;
+
+correlationCategoryOverview = [categoryOverviewAfterNANExclusion, table(CorrelationNoOutliers)];
+
+[~,idx] = sort(correlationCategoryOverview.CorrelationNoOutliers,'descend');
+correlationCategoryFinal = correlationCategoryOverview(idx,:);
+correlationCategoryFinal = correlationCategoryFinal(1:numberOfChosenFeatures,:);
+
+%LAPPELØSNING
+correlationCategoryFinal.Name(3) = 'totalBilirubin';
+correlationCategoryFinal.Name(5) = 'monos';
+correlationCategoryFinal.Name(6) = 'bedsideGlucose';
+
+finalFeatures = correlationCategoryFinal.Category;
+
+varNames = [cellstr(string(correlationCategoryFinal.Name)'),'Label'];
 % 
 % %Sorry, dette er ikke smart. MEN det er ikke tiden værd at finde ud af
 % %dette. Antallet af variable skal skrives manuelt.
-% dataFinal = table(dataSamlet(:,finalFeatures(1)),dataSamlet(:,finalFeatures(2)),dataSamlet(:,finalFeatures(3)),dataSamlet(:,finalFeatures(4)),dataSamlet(:,finalFeatures(5)),dataSamlet(:,finalFeatures(6)),dataSamlet(:,finalFeatures(7)),dataSamlet(:,finalFeatures(8)),dataSamlet(:,finalFeatures(9)),dataSamlet(:,finalFeatures(10)),dataSamlet(:,size(dataSamlet,2)),'VariableNames',varNames);
+dataFinal = table(dataSamlet(:,finalFeatures(1)),dataSamlet(:,finalFeatures(2)),dataSamlet(:,finalFeatures(3)),dataSamlet(:,finalFeatures(4)),dataSamlet(:,finalFeatures(5)),dataSamlet(:,finalFeatures(6)),dataSamlet(:,finalFeatures(7)),dataSamlet(:,finalFeatures(8)),dataSamlet(:,finalFeatures(9)),dataSamlet(:,finalFeatures(10)),dataSamlet(:,size(dataSamlet,2)),'VariableNames',varNames);
 
 

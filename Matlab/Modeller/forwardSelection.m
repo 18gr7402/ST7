@@ -8,7 +8,7 @@ clc
 
 %% Load data
 
-load('dataFinalForForwardSelectionTestThreashold300');
+load('dataFinalForForwardSelectionFromCorrelation');
 
 % %% Make category overview OBS. skal højest sandsynligt ikke bruges
 % 
@@ -21,12 +21,36 @@ load('dataFinalForForwardSelectionTestThreashold300');
 data = table2array(dataFinal);
 data(isnan(data))=0;
 
-cv = cvpartition(size(data,1),'HoldOut',0.2);
-splitIndex = cv.test;
-testSamples  = data(splitIndex,1:10);
-testLabelVec = data(splitIndex,11);
-trainSamples = data(~splitIndex,1:10);
-trainLabelVec = data(~splitIndex,11);
+% cv = cvpartition(size(data,1),'HoldOut',0.2);
+% splitIndex = cv.test;
+% testSamples  = data(splitIndex,1:10);
+% testLabelVec = data(splitIndex,11);
+% trainSamples = data(~splitIndex,1:10);
+% trainLabelVec = data(~splitIndex,11);
+
+% Opdeling af data i 0 og 1
+dataTemp1 = data(logical(data(:,11)),:); 
+dataTemp0 = data(logical(~data(:,11)),:);
+
+cv = cvpartition(size(data(logical(data(:,11))),1),'HoldOut',0.2);
+splitIndex1 = cv.test;
+cv = cvpartition(size(data(logical(~data(:,11))),1),'HoldOut',0.2);
+splitIndex0 = cv.test;
+
+testSamples1  = data(splitIndex1,1:10);
+testLabelVec1 = data(splitIndex1,11);
+trainSamples1 = data(~splitIndex1,1:10);
+trainLabelVec1 = data(~splitIndex1,11);
+
+testSamples0  = data(splitIndex0,1:10);
+testLabelVec0 = data(splitIndex0,11);
+trainSamples0 = data(~splitIndex0,1:10);
+trainLabelVec0 = data(~splitIndex0,11);
+
+testSamples = [testSamples1 ; testSamples0];
+testLabelVec = [testLabelVec1 ; testLabelVec0];
+trainSamples = [trainSamples1 ; trainSamples0];
+trainLabelVec = [trainLabelVec1 ; trainLabelVec0];
 
 
 %% initialize parameters to keep track of the selected features
