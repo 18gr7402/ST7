@@ -4,7 +4,6 @@
 %load rand500pidNCHR;
 %load rand500pidVPHR;
 %load rand500pidNCRR;
-%load rand500pidNCTempF;
 %load rand500pidRCRRpatient;
 %load rand500pidRCRRtotal;
 %load rand500pidVPRR;
@@ -56,14 +55,6 @@ NCRR = repmat(string('NCRR'),height(rand500pidNCRR),1);
 NCRRLabel = addvars(rand500pidNCRR,NCRR,'Before',('nursingchartcelltypevalname'));
 NCRRLabel = removevars(NCRRLabel,{'nursingchartcelltypevalname'});
 NCRRLabel.Properties.VariableNames = {'patientunitstayid' 'name' 'result' 'offset' 'unitadmittime24'};
-
-%% NCTempF - indsæt label i tabellen
-
-NCTempF = (1:height(rand500pidNCTempF))';
-NCTempF = repmat(string('NCTempF'),height(rand500pidNCTempF),1);
-
-NCTempFLabel = addvars(rand500pidNCTempF,NCTempF,'Before',('nursingchartvalue'));
-NCTempFLabel.Properties.VariableNames = {'patientunitstayid' 'name' 'result' 'offset' 'unitadmittime24'};
 
 %% RCRRpatient - indsæt label i tabellen
 
@@ -126,6 +117,6 @@ IOInsulinLabel.Properties.VariableNames = {'patientunitstayid' 'name' 'result' '
 %% Tabellerne er samlet
 
 
-FeatureLabelTabel = vertcat(LabLabel,VPTempLabel,NCTempCLabel,NCTempFLabel,NCRRLabel,RCRRpatientLabel,RCRRtotalLabel,VPRRLabel,NCHRLabel,VPHRLabel,NCBGLabel,NCPSLabel,IDInsulinLabel,IOInsulinLabel);
+FeatureLabelTabel = vertcat(LabLabel,VPTempLabel,NCTempCLabel,NCRRLabel,RCRRpatientLabel,RCRRtotalLabel,VPRRLabel,NCHRLabel,VPHRLabel,NCBGLabel,NCPSLabel,IDInsulinLabel,IOInsulinLabel);
            
                  
