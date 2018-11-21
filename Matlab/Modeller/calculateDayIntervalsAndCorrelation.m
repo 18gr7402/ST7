@@ -221,20 +221,34 @@ for i=1:length(unique(categoryOverviewAfterNANExclusion.Category))
     %dataForAnalysis(1+((i-1)*(length(dataSamletAfterNANExclusion))):length(dataSamletAfterNANExclusion)+((i-1)*(length(dataSamletAfterNANExclusion))),2) = categoryOverviewAfterNANExclusion.Name(i);
     
     dataSamletAfterNANExclusionNoNAN = dataSamletAfterNANExclusion(ind,i);
-    dataTemp1 = dataSamletAfterNANExclusionNoNAN(logical(dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2))));
-    dataTemp0 = dataSamletAfterNANExclusionNoNAN(logical(~dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2))));
+    labelAfterNANExclusionNoNAN = dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2));
+    
+    dataTemp1 = dataSamletAfterNANExclusionNoNAN(logical(labelAfterNANExclusionNoNAN));
+    dataTemp1Position1 = find(logical(labelAfterNANExclusionNoNAN));
+    dataTemp1OutlierPosition1 = find(isoutlier(dataTemp1,'mean'));
+    
+    dataTemp0 = dataSamletAfterNANExclusionNoNAN(logical(~labelAfterNANExclusionNoNAN));
+    dataTemp1Position0 = find(logical(labelAfterNANExclusionNoNAN));
+    dataTemp1OutlierPosition0 = find(isoutlier(dataTemp1,'mean'));
+    
+    index = ones(size(dataSamletAfterNANExclusionNoNAN,1),1);
+    index(dataTemp1Position1(dataTemp1OutlierPosition1)) = 0;
+    index(dataTemp1Position0(dataTemp1OutlierPosition0)) = 0;
+    
+    dataSamletAfterNANExclusionNoNANNoOutlier = dataSamletAfterNANExclusionNoNAN(logical(index));
+    labelAfterNANExclusionNoNANNoOutlier = labelAfterNANExclusionNoNAN(logical(index));
     
     % Analyser
     %The Levene, Brown-Forsythe, and O’Brien tests are less sensitive to departures from normality than Bartlett’s test, so they are useful alternatives if you suspect the samples come from nonnormal distributions.
     %[p] = vartestn(dataSamletAfterNANExclusion(ind,i),dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2)),'TestType','LeveneAbsolute','Display','off');
-    %pValues(i,1) = p;
-    pValues(i,1) = vartest2(dataTemp1,dataTemp0);
     [h,p] = vartest2(dataTemp1,dataTemp0);
-    pValues(i,2) = p;
+    isEqualVariance(i,1) = h;
+    isEqualVariance(i,2) = p;
     
     %Test for correlation
-    Correlation(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNAN,dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2))));
-        
+    Correlation(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNAN,labelAfterNANExclusionNoNAN));
+    CorrelationNoOutliers(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNANNoOutlier,labelAfterNANExclusionNoNANNoOutlier));
+    
     %Test for normal distribution: h = kstest(x) returns a test decision for the null hypothesis that the data in vector x comes from a standard normal distribution, against the alternative that it does not come from such a distribution, using the one-sample Kolmogorov-Smirnov test. The result h is 1 if the test rejects the null hypothesis at the 5% significance level, or 0 otherwise.
     isGaussianDistribution(i,1) = jbtest(dataTemp1,0.001);
     isGaussianDistribution(i,2) = jbtest(dataTemp0,0.001);
@@ -261,7 +275,7 @@ end
 
 %% Plot figurer
 % figure
-% bar(categoryOverviewAfterNANExclusion.Name,pValues)
+% bar(categoryOverviewAfterNANExclusion.Name,isEqualVariance)
 % title('P-values of the Leneve absolute test for equal variance between hypo og nohypo group');
 % xlabel('Feature');
 % ylabel('Correlation coefficient');
@@ -269,6 +283,12 @@ end
 figure
 bar(categoryOverviewAfterNANExclusion.Name,Correlation)
 title('Overview of correlation between feature and class label');
+xlabel('Feature');
+ylabel('Correlation coefficient');
+
+figure
+bar(categoryOverviewAfterNANExclusion.Name,CorrelationNoOutliers)
+title('Overview of correlation between feature and class label. No outliers');
 xlabel('Feature');
 ylabel('Correlation coefficient');
 
