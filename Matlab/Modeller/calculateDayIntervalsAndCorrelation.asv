@@ -234,20 +234,22 @@ for i=1:length(unique(categoryOverviewAfterNANExclusion.Category))
     
     %Test for correlation
     Correlation(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNAN,dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2))));
+    CorrelationNoOutliers(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNAN,dataSamletAfterNANExclusion(ind,size(dataSamletAfterNANExclusion,2))));
         
     %Test for normal distribution: h = kstest(x) returns a test decision for the null hypothesis that the data in vector x comes from a standard normal distribution, against the alternative that it does not come from such a distribution, using the one-sample Kolmogorov-Smirnov test. The result h is 1 if the test rejects the null hypothesis at the 5% significance level, or 0 otherwise.
     isGaussianDistribution(i,1) = jbtest(dataTemp1,0.001);
     isGaussianDistribution(i,2) = jbtest(dataTemp0,0.001);
     isGaussianDistributionNoOutliers(i,1) = jbtest(dataTemp1(~isoutlier(dataTemp1,'mean'),1),0.001);
     isGaussianDistributionNoOutliers(i,2) = jbtest(dataTemp0(~isoutlier(dataTemp0,'mean'),1),0.001);
-%      figure
-%      normplot(dataTemp1);
-%      figure
-%      hist(dataTemp1,10);
-%      figure
-%      normplot(dataTemp0);
-%      figure
-%      hist(dataTemp0,40);
+     figure
+     normplot(dataTemp1);
+     figure
+     hist(dataTemp1,10);
+     figure
+     normplot(dataTemp0);
+     figure
+     hist(dataTemp0,40);
+     
      
     %Test for outliers så det kan sammenholdes med total antal: TF = isoutlier(A) returns a logical array whose elements are true when an outlier is detected in the corresponding element of A. By default, an outlier is a value that is more than three scaled median absolute deviations (MAD) away from the median. If A is a matrix or table, then isoutlier operates on each column separately. If A is a multidimensional array, then isoutlier operates along the first dimension whose size does not equal 1.
     isOutlier(i,1) = sum(isoutlier(dataTemp1,'mean'));
