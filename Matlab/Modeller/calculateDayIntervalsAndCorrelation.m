@@ -6,11 +6,11 @@ clear
 %% Hent data, ekskluder patienter, label data og opdeling data på dage pr. patient
 
 %% Load data 
-load('FeatureLabelTabel500');
+load('FeatureLabelTabelWithOverallData500');
 
 %% Dupliker data så vi regner videre på en ny variabel
 
-data = FeatureLabelTabel;
+data = FeatureLabelTabelWithOverallData;
 
 %% Her fjernes alle rækker med negative labresultoffset og output gemmes i en ny tabel
 for i = 1:size(data,1)
@@ -312,17 +312,17 @@ correlationCategoryOverview = [categoryOverviewAfterNANExclusion, table(Correlat
 correlationCategoryFinal = correlationCategoryOverview(idx,:);
 correlationCategoryFinal = correlationCategoryFinal(1:numberOfChosenFeatures,:);
 
-%LAPPELØSNING
-correlationCategoryFinal.Name(3) = 'totalBilirubin';
-correlationCategoryFinal.Name(5) = 'monos';
-correlationCategoryFinal.Name(6) = 'bedsideGlucose';
-
-finalFeatures = correlationCategoryFinal.Category;
-
-varNames = [cellstr(string(correlationCategoryFinal.Name)'),'Label'];
+% %LAPPELØSNING
+% correlationCategoryFinal.Name(3) = 'totalBilirubin';
+% correlationCategoryFinal.Name(5) = 'monos';
+% correlationCategoryFinal.Name(6) = 'bedsideGlucose';
 % 
-% %Sorry, dette er ikke smart. MEN det er ikke tiden værd at finde ud af
-% %dette. Antallet af variable skal skrives manuelt.
-dataFinal = table(dataSamlet(:,finalFeatures(1)),dataSamlet(:,finalFeatures(2)),dataSamlet(:,finalFeatures(3)),dataSamlet(:,finalFeatures(4)),dataSamlet(:,finalFeatures(5)),dataSamlet(:,finalFeatures(6)),dataSamlet(:,finalFeatures(7)),dataSamlet(:,finalFeatures(8)),dataSamlet(:,finalFeatures(9)),dataSamlet(:,finalFeatures(10)),dataSamlet(:,size(dataSamlet,2)),'VariableNames',varNames);
+% finalFeatures = correlationCategoryFinal.Category;
+% 
+% varNames = [cellstr(string(correlationCategoryFinal.Name)'),'Label'];
+% % 
+% % %Sorry, dette er ikke smart. MEN det er ikke tiden værd at finde ud af
+% % %dette. Antallet af variable skal skrives manuelt.
+% dataFinal = table(dataSamlet(:,finalFeatures(1)),dataSamlet(:,finalFeatures(2)),dataSamlet(:,finalFeatures(3)),dataSamlet(:,finalFeatures(4)),dataSamlet(:,finalFeatures(5)),dataSamlet(:,finalFeatures(6)),dataSamlet(:,finalFeatures(7)),dataSamlet(:,finalFeatures(8)),dataSamlet(:,finalFeatures(9)),dataSamlet(:,finalFeatures(10)),dataSamlet(:,size(dataSamlet,2)),'VariableNames',varNames);
 
 

@@ -6,14 +6,14 @@ clc
 
 load('FeatureLabelTabel500')
 
-%% Glukose
+%% Bedside glukose
 %Find dataposition
 labBedsideGlucose = find(FeatureLabelTabel.name == 'bedside glucose');
 NCBG = find(FeatureLabelTabel.name == 'NCBG');
 %Samling af data
-glucoseOverall= vertcat(FeatureLabelTabel(labBedsideGlucose,:),FeatureLabelTabel(NCBG,:));
+bedsideGlucoseOverall= vertcat(FeatureLabelTabel(labBedsideGlucose,:),FeatureLabelTabel(NCBG,:));
 %Ændre navn
-glucoseOverall.name = repmat(string('glucoseOverall'),height(glucoseOverall),1);
+bedsideGlucoseOverall.name = repmat(string('bedsideGlucoseOverall'),height(bedsideGlucoseOverall),1);
 
 %% Respiratory rate
 
@@ -47,4 +47,4 @@ temperatureOverall.name = repmat(string('temperatureOverall'),height(temperature
 
 %% Samling af ny data og FeatureLabelTabel
 
-FeatureLabelTabelWithOverallData = vertcat(FeatureLabelTabel,glucoseOverall,respiratoryRateOverall,heartRateOverall,temperatureOverall);
+FeatureLabelTabelWithOverallData = vertcat(FeatureLabelTabel,bedsideGlucoseOverall,respiratoryRateOverall,heartRateOverall,temperatureOverall);
