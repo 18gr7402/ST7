@@ -269,12 +269,11 @@ for i=1:length(unique(categoryOverviewAfterNANExclusion.Category))
     isEqualVariance(i,1) = h;
     isEqualVariance(i,2) = p;
     
-    figure
-    subplot(1,2,1)
-    boxplot(dataTemp1(~isoutlier(dataTemp1,'mean'),1))
-    subplot(1,2,2)
-    boxplot(dataTemp0(~isoutlier(dataTemp0,'mean'),1))
-    %axis([0 2 0 15])
+%     figure
+%     subplot(1,2,1)
+%     boxplot(dataTemp1(~isoutlier(dataTemp1,'mean'),1))
+%     subplot(1,2,2)
+%     boxplot(dataTemp0(~isoutlier(dataTemp0,'mean'),1))
     
     %Test for correlation
     %Correlation(i,1) = abs(corr2(dataSamletAfterNANExclusionNoNAN,labelAfterNANExclusionNoNAN));
@@ -291,11 +290,11 @@ end
 % xlabel('Feature');
 % ylabel('Correlation coefficient');
 
-figure
-bar(categoryOverviewAfterNANExclusion.Name,Correlation)
-title('Overview of correlation between feature and class label');
-xlabel('Feature');
-ylabel('Correlation coefficient');
+% figure
+% bar(categoryOverviewAfterNANExclusion.Name,Correlation)
+% title('Overview of correlation between feature and class label');
+% xlabel('Feature');
+% ylabel('Correlation coefficient');
 
 figure
 bar(categoryOverviewAfterNANExclusion.Name,CorrelationNoOutliers)
