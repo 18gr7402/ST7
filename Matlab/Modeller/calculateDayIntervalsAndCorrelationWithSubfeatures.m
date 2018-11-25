@@ -6,11 +6,11 @@ clear
 %% Hent data, ekskluder patienter, label data og opdeling data på dage pr. patient
 
 %% Load data 
-load('FeatureLabelTabel500');
+load('FeatureLabelTabelWithOverallData500');
 
 %% Dupliker data så vi regner videre på en ny variabel
 
-data = FeatureLabelTabel(1:5000,:);
+data = FeatureLabelTabelWithOverallData;
 
 %% Her fjernes alle rækker med negative labresultoffset og output gemmes i en ny tabel
 for i = 1:size(data,1)
@@ -88,10 +88,10 @@ dataTrim = [dataTrim table(label)];
 hypoPatientDayInfo = [dataTrim.patientunitstayid(locationOfglucoseMeasurementsUnder70) dataTrim.testDay(locationOfglucoseMeasurementsUnder70)];
 
 %Indexer labname til talrepresentationer
-category = categorical(unique(string(dataTrim.name)));
+category = categorical(string(dataTrim.name));
 dataTrim.Category = grp2idx(category);
 varNames = {'Name','Category'};
-categoryOverview = table(category,unique(dataTrim.Category),'VariableNames',varNames);
+categoryOverview = table(unique(category),unique(dataTrim.Category),'VariableNames',varNames);
 
 %Preallocate
 numberOfDaysIncluded = 5;
@@ -135,7 +135,7 @@ numberOfDaysIncluded = 5;
 % Variabel der definerer antallet af subfeatures
 numOfSubfeatures = 8;
 % Preallokering 
-dataSamlet = zeros(51, length(unique(dataTrim.Category))*numOfSubfeatures+1);
+dataSamlet = zeros(1065, length(unique(dataTrim.Category))*numOfSubfeatures+1);
 
 %PatientID og hvilken dag der er oplevet hypo
 hypoPatientDayInfo = [dataTrim.patientunitstayid(locationOfglucoseMeasurementsUnder70) dataTrim.testDay(locationOfglucoseMeasurementsUnder70)];
@@ -220,7 +220,7 @@ for i=1:length(uniquePatient)
 end
 
 %% Tilføj sub-kategorier
-stringCategory = string(category);
+stringCategory = string(unique(dataTrim.name));
 for index=1:length(unique(dataTrim.Category));
     stringCategory{end+1} = char(strcat('Median',string(categoryOverview.Name(index))));
 end
@@ -248,24 +248,18 @@ end
 for index=1:length(unique(dataTrim.Category));
     stringCategory{end+1} = char(strcat('RegCoeff',string(categoryOverview.Name(index))));
 end
-subfeatureCategory = categorical(string(stringCategory));
+categoryOverviewWithSubfeatures = [stringCategory,(1:length(stringCategory))'];
 
-
-category = categorical(unique(string(dataTrim.name)));
-dataTrim.Category = grp2idx(category);
-
-Hej = grp2idx(subfeatureCategory);
-varNames = {'Name','Category'};
-categoryOverview = table(subfeatureCategory,Hej,'VariableNames',varNames);
 
 %% Antal af NAN plot
 
-for i=1:length(dataSamlet)-1
+
+for i=1:size(dataSamlet,2)-1
     dataNAN(1,i) = sum(isnan(dataSamlet(:,i)));
 end
 
 figure
-bar(stringCategory,dataNAN)
+bar(dataNAN)
 title('Number of missing measurements');
 xlabel('Feature');
 ylabel('Number of NAN values');
@@ -273,19 +267,19 @@ ylabel('Number of NAN values');
 dataNANprocent = 100*(dataNAN./length(dataSamlet));
 
 figure
-bar(stringCategory,dataNANprocent)
+bar(dataNANprocent)
 title('Procent of missing measurements');
 xlabel('Feature');
 ylabel('Procent of NAN values');
 
-thresholdForExcludingNAN = 10;
+thresholdForExcludingNAN = 800;
 
-dataSamletAfterNANExclusion = [dataSamlet(:,find(dataNAN <=thresholdForExcludingNAN)),dataSamlet(:,length(dataSamlet))];
-categoryOverviewAfterNANExclusion = categoryOverview(find(dataNAN <=thresholdForExcludingNAN),:);
+dataSamletAfterNANExclusion = [dataSamlet(:,find(dataNAN <=thresholdForExcludingNAN)),dataSamlet(:,size(dataSamlet,2))];
+categoryOverviewAfterNANExclusion = categoryOverviewWithSubfeatures(find(dataNAN <=thresholdForExcludingNAN),:);
 
 %% Korrelationsanalyse
 
-for i=1:length(unique(categoryOverviewAfterNANExclusion.Category))
+for i=1:length(unique(categoryOverviewAfterNANExclusion(:,2)))
     % Inddeling af data
     ind = ~isnan(dataSamletAfterNANExclusion(:,i));
     %dataForAnalysis(1+((i-1)*(length(dataSamletAfterNANExclusion))):length(dataSamletAfterNANExclusion)+((i-1)*(length(dataSamletAfterNANExclusion))),1) = dataSamletAfterNANExclusion(:,i);
@@ -368,7 +362,7 @@ end
 % ylabel('Correlation coefficient');
 
 figure
-bar(categoryOverviewAfterNANExclusion.Name,CorrelationNoOutliers)
+bar(CorrelationNoOutliers)
 title('Overview of correlation between feature and class label. No outliers');
 xlabel('Feature');
 ylabel('Correlation coefficient');

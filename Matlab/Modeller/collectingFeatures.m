@@ -18,11 +18,11 @@ bedsideGlucoseOverall.name = repmat(string('bedsideGlucoseOverall'),height(bedsi
 %% Respiratory rate
 
 RCRRpatient = find(FeatureLabelTabel.name == 'RCRRpatient');
-RCRRtotal = find(FeatureLabelTabel.name == 'RCRRtotal');
 VPRR = find(FeatureLabelTabel.name == 'VPRR');
 NCRR = find(FeatureLabelTabel.name == 'NCRR');
+labRespiratoryRate = find(FeatureLabelTabel.name == 'Respiratory Rate');
 
-respiratoryRateOverall = vertcat(FeatureLabelTabel(RCRRpatient,:),FeatureLabelTabel(RCRRtotal,:),FeatureLabelTabel(VPRR,:),FeatureLabelTabel(NCRR,:));
+respiratoryRateOverall = vertcat(FeatureLabelTabel(RCRRpatient,:),FeatureLabelTabel(labRespiratoryRate,:),FeatureLabelTabel(VPRR,:),FeatureLabelTabel(NCRR,:));
 
 respiratoryRateOverall.name = repmat(string('respiratoryRateOverall'),height(respiratoryRateOverall),1);
 
