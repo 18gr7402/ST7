@@ -31,6 +31,10 @@ dataFinal = table(dataSamlet(:,finalFeatures(1,1)),dataSamlet(:,finalFeatures(1,
 
 data = table2array(dataFinal);
 
+% Opdeling af data i 0 og 1
+dataTemp1 = data(logical(data(:,11)),:); 
+dataTemp0 = data(logical(~data(:,11)),:);
+
 % Det sikres, at vi har samples med label 1 i vores partitions
 nFold = 5;
 cv = cvpartition(dataFinal.Label, 'KFold',nFold,'Stratify',true)
@@ -43,8 +47,8 @@ field4 = 'classifier4';
 field5 = 'classifier5';
 field6 = 'classifier6';
 n= size(dataFinal,1);
-samLabelVec = struct(field1,zeros(n,1),field2,zeros(n,1),field3,zeros(n,1),field4,zeros(n,1),field5,zeros(n,1),field6,zeros(n,1));
-samScoreVec = struct(field1,zeros(n,2),field2,zeros(n,2),field3,zeros(n,2),field4,zeros(n,2),field5,zeros(n,2),field6,zeros(n,2));
+samLabelVec = struct(field1,zeros(n,1),field2,zeros(n,1),field3,zeros(n,1),field4,zeros(n,1),field5,zeros(n,1));
+samScoreVec = struct(field1,zeros(n,2),field2,zeros(n,2),field3,zeros(n,2),field4,zeros(n,2),field5,zeros(n,2));
 
 
 %% cross validation loop (Fra MM6 i PRDS: mm6exerciseSolution)
@@ -68,9 +72,9 @@ classifier{3} = fitctree(X,y);
 classifier{4} = fitcknn(X,y);
 %Train a support vector machine
 classifier{5} = fitcsvm(X,y);
-mdTreebag = ClassificationTree.template('NVarToSample','all','surrogate','on');
-classifier{6} = fitensemble(X,y,'Bag',150,mdTreebag,'type','classification');
-
+mdl2 = ClassificationTree.template('NVarToSample','all','surrogate','on');
+RF2 = fitensemble(Xtrain,Ytrain,'Bag',150,mdl2,'type','classification');
+classifier{6} = 
 
    [mFoldLabel,mFoldScore] = predict(classifier{1},dataFinal(testIndex,[1:10]));
    % saves results for each m-fold
@@ -91,72 +95,18 @@ classifier{6} = fitensemble(X,y,'Bag',150,mdTreebag,'type','classification');
    % saves results for each m-fold
    samLabelVec.classifier4(testIndex,:)=mFoldLabel;
    samScoreVec.classifier4(testIndex,:)=mFoldScore;
-   
-      [mFoldLabel,mFoldScore] = predict(classifier{5},dataFinal(testIndex,[1:10]));
-   % saves results for each m-fold
-   samLabelVec.classifier5(testIndex,:)=mFoldLabel;
-   samScoreVec.classifier5(testIndex,:)=mFoldScore;
-   
-      [mFoldLabel,mFoldScore] = predict(classifier{6},dataFinal(testIndex,[1:10]));
-   % saves results for each m-fold
-   samLabelVec.classifier6(testIndex,:)=mFoldLabel;
-   samScoreVec.classifier6(testIndex,:)=mFoldScore;
 end
 %% m-fold error rate
 mFoldErrorVec(1,1)=sum((samLabelVec.classifier1-dataFinal.Label)~=0)/size(dataFinal.Label,1);
 mFoldErrorVec(2,1)=sum((samLabelVec.classifier2-dataFinal.Label)~=0)/size(dataFinal.Label,1);
 mFoldErrorVec(3,1)=sum((samLabelVec.classifier3-dataFinal.Label)~=0)/size(dataFinal.Label,1);
 mFoldErrorVec(4,1)=sum((samLabelVec.classifier4-dataFinal.Label)~=0)/size(dataFinal.Label,1);
-mFoldErrorVec(5,1)=sum((samLabelVec.classifier5-dataFinal.Label)~=0)/size(dataFinal.Label,1);
-mFoldErrorVec(6,1)=sum((samLabelVec.classifier6-dataFinal.Label)~=0)/size(dataFinal.Label,1);
 
-PR(1,:) = Evaluate(samLabelVec.classifier1,dataFinal.Label);
-PR(2,:) = Evaluate(samLabelVec.classifier2,dataFinal.Label);
-PR(3,:) = Evaluate(samLabelVec.classifier3,dataFinal.Label);
-PR(4,:) = Evaluate(samLabelVec.classifier4,dataFinal.Label);
-PR(5,:) = Evaluate(samLabelVec.classifier5,dataFinal.Label);
-PR(6,:) = Evaluate(samLabelVec.classifier6,dataFinal.Label);
+VAR(1,:) = Evaluate(samLabelVec.classifier1,dataFinal.Label)
+VAR(2,:) = Evaluate(samLabelVec.classifier2,dataFinal.Label)
+VAR(3,:) = Evaluate(samLabelVec.classifier3,dataFinal.Label)
+VAR(4,:) = Evaluate(samLabelVec.classifier4,dataFinal.Label)
 
-%% ROC curve
-[X1,Y1,T1,AUC1] = perfcurve(dataFinal.Label,samScoreVec.classifier1(:,2),1);
-[X2,Y2,T2,AUC2] = perfcurve(dataFinal.Label,samScoreVec.classifier2(:,2),1);
-[X3,Y3,T3,AUC3] = perfcurve(dataFinal.Label,samScoreVec.classifier3(:,2),1);
-[X4,Y4,T4,AUC4] = perfcurve(dataFinal.Label,samScoreVec.classifier4(:,2),1);
-[X5,Y5,T5,AUC5] = perfcurve(dataFinal.Label,samScoreVec.classifier5(:,2),1);
-[X6,Y6,T6,AUC6] = perfcurve(dataFinal.Label,samScoreVec.classifier6(:,2),1);
-
-figure;
-plot(X1,Y1)
-xlabel('False positive rate')
-ylabel('True positive rate')
-title('ROC for m-fold validation')
-
-figure;
-plot(X2,Y2)
-xlabel('False positive rate')
-ylabel('True positive rate')
-title('ROC for m-fold validation')
-
-figure;
-plot(X3,Y3)
-xlabel('False positive rate')
-ylabel('True positive rate')
-title('ROC for m-fold validation')
-
-figure;
-plot(X4,Y4)
-xlabel('False positive rate')
-ylabel('True positive rate')
-title('ROC for m-fold validation')
-
-figure;
-plot(X5,Y5)
-xlabel('False positive rate')
-ylabel('True positive rate')
-title('ROC for m-fold validation')
-
-figure;
-plot(X6,Y6)
-xlabel('False positive rate')
-ylabel('True positive rate')
-title('ROC for m-fold validation')
+%Vi ser for det første at mFoldLabel indeholder ene af nuller.
+%Vi ser for det andet at mFoldSore indeholder to kolonner med ene af
+%NAN-værdier
