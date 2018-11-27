@@ -19,7 +19,6 @@ load('dataFinalForForwardSelectionFromCorrelation');
 % Skal lige tilpasses så vi tager samme procentdel fra hver gruppe.
 
 data = table2array(dataFinal);
-data(isnan(data))=0;
 
 % cv = cvpartition(size(data,1),'HoldOut',0.2);
 % splitIndex = cv.test;
@@ -32,17 +31,6 @@ data(isnan(data))=0;
 
 load('ourStandardCVPartition');
 
-
-%% initialize parameters to keep track of the selected features
-selectedFeatArr=zeros(1,size(data,2)-1);
-remainFeatArr=ones(1,size(data,2)-1);
-
-selectFeatMatrixTrain=[];
-selectFeatMatrixTest=[];
-remainFeatsInx=1:size(data,2)-1;
-ittNo=1;
-prevAuc=0;
-maxAuc=0.1;
 
 % while ittNo>=1&&prevAuc<maxAuc
 %% perform feature selection untill all features are selected
@@ -63,15 +51,24 @@ for foldNo=1:nFold
 
     trainLabelVec = data(trainIndex,11);
     testLabelVec = data(testIndex,11);
-  
+% initialize parameters to keep track of the selected features  
+    selectedFeatArr=zeros(1,size(data,2)-1);
+    remainFeatArr=ones(1,size(data,2)-1);
 
+    selectFeatMatrixTrain=[];
+    selectFeatMatrixTest=[];
+    remainFeatsInx=1:size(data,2)-1;
+    ittNo=1;
+    prevAuc=0;
+    maxAuc=0.1;
+    
 while ittNo<=length(selectedFeatArr) 
     featAuc=[];
     %% finds the features that are not yet selected
-    remainFeatsInx=find(remainFeatArr==1)
+    remainFeatsInx=find(remainFeatArr==1);
     %% test the feature combinations
     for featTestNo=1:length(remainFeatsInx)
-        featInx=remainFeatsInx(featTestNo)
+        featInx=remainFeatsInx(featTestNo);
         %% makes a feature matrix for the traning data
         trainFeature=trainSamples(:,featInx);
         featSelecTestMatrxTrain=[selectFeatMatrixTrain trainFeature];
@@ -82,7 +79,7 @@ while ittNo<=length(selectedFeatArr)
         %% classify the data using the new test feature matrix
         % Vi skal have beluttet os for en classifier, har bare tage
         % discriminant analyse
-        Mdl = fitcknn(featSelecTestMatrxTrain,trainLabelVec);
+        Mdl = fitctree(featSelecTestMatrxTrain,trainLabelVec);
         [label,score] = predict(Mdl,featSelecTestMatrxTest);
         %% obtain performance metrics based on the classification
         [X,Y,T,AUC] = perfcurve(testLabelVec,score(:,1),1);
@@ -109,12 +106,16 @@ end
 selectedFeatFold(foldNo,:)=selectFeatIdxItt;
 selectedFeatAUCFold(foldNo,:)=selectFeatAucItt;
 
-end
+% plot results of the feature selection
 
-
-%% plot results of the feature selection
 figure;
 plot(selectFeatAucItt,'ro-');hold on
 xlabel('Number of features')
 ylabel('AUC')
+
+
+end
+
+
+
 
