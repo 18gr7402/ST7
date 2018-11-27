@@ -4,7 +4,7 @@ clc
 
 %% Load data
 
-load('FeatureLabelTabel500')
+load('FeatureLabelTabel5000')
 
 %% Bedside glukose
 %Find dataposition
@@ -26,25 +26,25 @@ respiratoryRateOverall = vertcat(FeatureLabelTabel(RCRRpatient,:),FeatureLabelTa
 
 respiratoryRateOverall.name = repmat(string('respiratoryRateOverall'),height(respiratoryRateOverall),1);
 
-%% Heart rate
-
-VPHR = find(FeatureLabelTabel.name == 'VPHR');
-NCHR = find(FeatureLabelTabel.name == 'NCHR');
-
-heartRateOverall = vertcat(FeatureLabelTabel(VPHR,:),FeatureLabelTabel(NCHR,:));
-
-heartRateOverall.name = repmat(string('heartRateOverall'),height(heartRateOverall),1);
-
-%% Temperature
-
-NCTempC = find(FeatureLabelTabel.name == 'NCTempC');
-VPTemp = find(FeatureLabelTabel.name == 'VPTemp');
-Temperature = find(FeatureLabelTabel.name == 'Temperature');
-
-temperatureOverall = vertcat(FeatureLabelTabel(NCTempC,:),FeatureLabelTabel(VPTemp,:),FeatureLabelTabel(Temperature,:));
-
-temperatureOverall.name = repmat(string('temperatureOverall'),height(temperatureOverall),1);
+% %% Heart rate
+% 
+% VPHR = find(FeatureLabelTabel.name == 'VPHR');
+% NCHR = find(FeatureLabelTabel.name == 'NCHR');
+% 
+% heartRateOverall = vertcat(FeatureLabelTabel(VPHR,:),FeatureLabelTabel(NCHR,:));
+% 
+% heartRateOverall.name = repmat(string('heartRateOverall'),height(heartRateOverall),1);
+% 
+% %% Temperature
+% 
+% NCTempC = find(FeatureLabelTabel.name == 'NCTempC');
+% VPTemp = find(FeatureLabelTabel.name == 'VPTemp');
+% Temperature = find(FeatureLabelTabel.name == 'Temperature');
+% 
+% temperatureOverall = vertcat(FeatureLabelTabel(NCTempC,:),FeatureLabelTabel(VPTemp,:),FeatureLabelTabel(Temperature,:));
+% 
+% temperatureOverall.name = repmat(string('temperatureOverall'),height(temperatureOverall),1);
 
 %% Samling af ny data og FeatureLabelTabel
 
-FeatureLabelTabelWithOverallData = vertcat(FeatureLabelTabel,bedsideGlucoseOverall,respiratoryRateOverall,heartRateOverall,temperatureOverall);
+FeatureLabelTabelWithOverallData = vertcat(FeatureLabelTabel,bedsideGlucoseOverall,respiratoryRateOverall);
