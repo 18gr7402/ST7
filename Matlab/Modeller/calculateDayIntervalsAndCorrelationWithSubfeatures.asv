@@ -394,12 +394,12 @@ correlationCategoryFinal(31,1) = 'RegCoeffbedsideglucose';
 correlationCategoryFinal(35,1) = 'Maxmonos';
 correlationCategoryFinal(40,1) = 'bedsideglucose';
 
-finalFeatures = str2double(correlationCategoryFinal(:,[2])');
-%finalFeatures = [659 710 558 709 557 51 203 1013 405 406 1014 856 248 96 704 253 254 722 613 293 141 749 811 901 198 654 46 157 5 806 1165 286 1166 1038 765 266 430 102 134 101 206 54 507 886 236 84 712 256 278 126];
+%finalFeatures = str2double(correlationCategoryFinal(:,[2]));
+finalFeatures = [659 710 558 709 557 51 203 1013 405 406 1014 856 248 96 704 253 254 722 613 293 141 749 811 901 198 654 46 157 5 806 1165 286 1166 1038 765 266 430 102 134 101 206 54 507 886 236 84 712 256 278 126];
 % 
 
-% l = correlationCategoryFinal(:,[2])';
-% finalFeatures = str2double(l);
+l = correlationCategoryFinal(:,[2]);
+finalFeatures = str2double(l);
 
 varNames = [cellstr(string(correlationCategoryFinal(:,1))'),'Label'];
 % % 
