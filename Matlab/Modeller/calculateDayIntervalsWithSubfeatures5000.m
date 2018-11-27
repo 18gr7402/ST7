@@ -6,11 +6,11 @@ clear
 %% Hent data, ekskluder patienter, label data og opdeling data på dage pr. patient
 
 %% Load data 
-load('FeatureLabelTabelWithOverallData500');
+load('FeatureLabelTabelWithOverallData5000');
 
 %% Dupliker data så vi regner videre på en ny variabel
 
-data = FeatureLabelTabelWithOverallData(1:10000,:);
+data = FeatureLabelTabelWithOverallData;
 
 %% Her fjernes alle rækker med negative offset og output gemmes i en ny tabel
 for i = 1:size(data,1)
