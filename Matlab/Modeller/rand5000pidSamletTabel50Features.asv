@@ -26,9 +26,8 @@ VPRR = repmat(string('VPRR'),height(rand5000pidVPRR),1);
 VPRRLabel = addvars(rand5000pidVPRR,VPRR,'Before',('respiration'));
 %VPRRLabel.observationoffset = str2double(VPRRLabel.observationoffset);
 VPRRLabel.Properties.VariableNames = {'patientunitstayid' 'name' 'result' 'offset' 'unitadmittime24'};
-% VPRRLabel.offset = str2double(VPRRLabel.offset);
-% VPRRLabel.patientunitstayid = str2double(VPRRLabel.patientunitstayid);
-% VPRRLabel.result = str2double(VPRRLabel.result);
+VPRRLabel.offset = str2double(VPRRLabel.offset);
+VPRRLabel.patientunitstayid = str2double(VPRRLabel.offset);
 %% NCBG
 
 NCBG = (1:height(rand5000pidNCBG))';
