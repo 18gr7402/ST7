@@ -46,11 +46,11 @@ for foldNo=1:nFold
     
     %% classify the test samples based on the traning data
     
-    trainSamples = data(trainIndex,[1:10]);
-    testSamples = data(testIndex,[1:10]);
+    trainSamples = data(trainIndex,[1:size(data,2)-1]);
+    testSamples = data(testIndex,[1:size(data,2)-1]);
 
-    trainLabelVec = data(trainIndex,11);
-    testLabelVec = data(testIndex,11);
+    trainLabelVec = data(trainIndex,size(data,2));
+    testLabelVec = data(testIndex,size(data,2));
 % initialize parameters to keep track of the selected features  
     selectedFeatArr=zeros(1,size(data,2)-1);
     remainFeatArr=ones(1,size(data,2)-1);
