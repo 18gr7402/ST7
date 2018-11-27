@@ -29,43 +29,42 @@ data(isnan(data))=0;
 % trainLabelVec = data(~splitIndex,11);
 
 % Opdeling af data i 0 og 1
-dataTemp1 = data(logical(data(:,11)),:); 
-dataTemp0 = data(logical(~data(:,11)),:);
 
-cv = cvpartition(size(data(logical(data(:,11))),1),'HoldOut',0.2);
-splitIndex1 = cv.test;
-cv = cvpartition(size(data(logical(~data(:,11))),1),'HoldOut',0.2);
-splitIndex0 = cv.test;
-
-testSamples1  = data(splitIndex1,1:10);
-testLabelVec1 = data(splitIndex1,11);
-trainSamples1 = data(~splitIndex1,1:10);
-trainLabelVec1 = data(~splitIndex1,11);
-
-testSamples0  = data(splitIndex0,1:10);
-testLabelVec0 = data(splitIndex0,11);
-trainSamples0 = data(~splitIndex0,1:10);
-trainLabelVec0 = data(~splitIndex0,11);
-
-testSamples = [testSamples1 ; testSamples0];
-testLabelVec = [testLabelVec1 ; testLabelVec0];
-trainSamples = [trainSamples1 ; trainSamples0];
-trainLabelVec = [trainLabelVec1 ; trainLabelVec0];
+load('ourStandardCVPartition');
 
 
 %% initialize parameters to keep track of the selected features
-selectedFeatArr=zeros(1,size(trainSamples,2));
-remainFeatArr=ones(1,size(trainSamples,2));
+selectedFeatArr=zeros(1,size(data,2)-1);
+remainFeatArr=ones(1,size(data,2)-1);
 
 selectFeatMatrixTrain=[];
 selectFeatMatrixTest=[];
-remainFeatsInx=1:size(testSamples,2);
+remainFeatsInx=1:size(data,2)-1;
 ittNo=1;
 prevAuc=0;
 maxAuc=0.1;
 
 % while ittNo>=1&&prevAuc<maxAuc
 %% perform feature selection untill all features are selected
+
+%%
+
+nFold=5;
+
+for foldNo=1:nFold
+    %% finds index on the training and test samples
+    trainIndex=find(training(cv,foldNo)==1);
+    testIndex=find(test(cv,foldNo)==1);
+    
+    %% classify the test samples based on the traning data
+    
+    trainSamples = data(trainIndex,[1:10]);
+    testSamples = data(testIndex,[1:10]);
+
+    trainLabelVec = data(trainIndex,11);
+    testLabelVec = data(testIndex,11);
+  
+
 while ittNo<=length(selectedFeatArr) 
     featAuc=[];
     %% finds the features that are not yet selected
@@ -83,7 +82,7 @@ while ittNo<=length(selectedFeatArr)
         %% classify the data using the new test feature matrix
         % Vi skal have beluttet os for en classifier, har bare tage
         % discriminant analyse
-        Mdl = fitcdiscr(featSelecTestMatrxTrain,trainLabelVec);
+        Mdl = fitcknn(featSelecTestMatrxTrain,trainLabelVec);
         [label,score] = predict(Mdl,featSelecTestMatrxTest);
         %% obtain performance metrics based on the classification
         [X,Y,T,AUC] = perfcurve(testLabelVec,score(:,1),1);
@@ -106,6 +105,12 @@ while ittNo<=length(selectedFeatArr)
     selectFeatAucItt(ittNo)=maxAuc;
     ittNo=ittNo+1;
 end
+
+selectedFeatFold(foldNo,:)=selectFeatIdxItt;
+selectedFeatAUCFold(foldNo,:)=selectFeatAucItt;
+
+end
+
 
 %% plot results of the feature selection
 figure;
