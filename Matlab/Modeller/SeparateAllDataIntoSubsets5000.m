@@ -24,8 +24,7 @@ subset7 = sortData(4060727:4963835,:);  % Starter med pId 1638579 og slutter med
 subset8 = sortData(4963836:5865757,:);  % Starter med pId 1814272 og slutter med pId 2401329
 subset9 = sortData(5865758:6765839,:);  % Starter med pId 2403618 og slutter med pId 2751335
 subset10 = sortData(6765840:7666262,:); % Starter med pId 2752818 og slutter med pId 3009540
-subset11 = sortData(7666263:8568603,:); % Starter med pId 3010000 og slutter med pId 3179215
-subset12 = sortData(8568604:9066021,:); % Starter med pId 3179323 og slutter med pId 3353121
+subset11 = sortData(7666263:9066021,:); % Starter med pId 3010000 og slutter med pId 3353121
 
 
 
