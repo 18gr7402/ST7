@@ -19,7 +19,7 @@ for i=1:size(data,2)-1
     dataNAN(1,i) = sum(isnan(data(:,i)));
 end
 
-thresholdForExcludingNAN = 1500;
+thresholdForExcludingNAN = 8000;
 data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
