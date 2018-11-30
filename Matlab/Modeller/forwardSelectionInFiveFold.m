@@ -8,7 +8,7 @@ clc
 
 %% Load data
 
-load('dataFinalForForwardSelectionFromCorrelation');
+load('dataFinalForForwardSelection5000');
 
 % %% Make category overview OBS. skal højest sandsynligt ikke bruges
 % 
@@ -18,7 +18,7 @@ load('dataFinalForForwardSelectionFromCorrelation');
 %% Split into training and test
 % Skal lige tilpasses så vi tager samme procentdel fra hver gruppe.
 
-data = table2array(dataFinal);
+data = dataFinalForForwardSelection5000;
 
 % cv = cvpartition(size(data,1),'HoldOut',0.2);
 % splitIndex = cv.test;
@@ -28,16 +28,15 @@ data = table2array(dataFinal);
 % trainLabelVec = data(~splitIndex,11);
 
 % Opdeling af data i 0 og 1
+nFold=5;
 
-load('ourStandardCVPartition');
-
+%load('ourStandardCVPartition');
+cv = cvpartition(data(:,51),'KFold',nFold,'Stratify',true);
 
 % while ittNo>=1&&prevAuc<maxAuc
 %% perform feature selection untill all features are selected
 
 %%
-
-nFold=5;
 
 for foldNo=1:nFold
     %% finds index on the training and test samples
@@ -79,7 +78,7 @@ while ittNo<=length(selectedFeatArr)
         %% classify the data using the new test feature matrix
         % Vi skal have beluttet os for en classifier, har bare tage
         % discriminant analyse
-        Mdl = fitctree(featSelecTestMatrxTrain,trainLabelVec);
+        Mdl = fitcknn(featSelecTestMatrxTrain,trainLabelVec);
         [label,score] = predict(Mdl,featSelecTestMatrxTest);
         %% obtain performance metrics based on the classification
         [X,Y,T,AUC] = perfcurve(testLabelVec,score(:,1),1);
