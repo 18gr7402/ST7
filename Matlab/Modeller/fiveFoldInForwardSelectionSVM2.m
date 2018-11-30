@@ -3,7 +3,7 @@ clc
 clearvars -except resulterendeFeatures resulterendeAUC idx
 
 %% Desciption
-%Scrip for farward selection of the data 
+%Scrip for forward selection of the data 
 
 %% Load data
 load('dataFinalForForwardSelection5000');
@@ -74,7 +74,7 @@ while ittNo<=stopCriterion
         %% classify the data using the new test feature matrix
         % Vi skal have beluttet os for en classifier, har bare tage
         % discriminant analyse
-        Mdl = fitctree(featSelecTestMatrxTrain,trainLabelVec);
+        Mdl = fitcsvm(featSelecTestMatrxTrain,trainLabelVec);
         [label,score] = predict(Mdl,featSelecTestMatrxTest);
         %% obtain performance metrics based on the classification
         [X,Y,T,AUC] = perfcurve(testLabelVec,score(:,1),1);

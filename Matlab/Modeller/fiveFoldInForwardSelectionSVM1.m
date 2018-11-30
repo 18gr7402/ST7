@@ -3,7 +3,7 @@ clc
 clearvars -except resulterendeFeatures resulterendeAUC idx
 
 %% Desciption
-%Scrip for farward selection of the data 
+%Scrip for forward selection of the data 
 
 %% Load data
 load('dataFinalForForwardSelection5000');
@@ -23,7 +23,7 @@ thresholdForExcludingNAN = 8000;
 data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
-stopCriterion = 2;
+stopCriterion = 15;
 numberOfForwardSelections = 1;
 
 for i=1:numberOfForwardSelections
