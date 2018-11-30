@@ -19,11 +19,11 @@ for i=1:size(data,2)-1
     dataNAN(1,i) = sum(isnan(data(:,i)));
 end
 
-thresholdForExcludingNAN = 1500;
+thresholdForExcludingNAN = 8000;
 data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
-stopCriterion = 15;
+stopCriterion = 2;
 numberOfForwardSelections = 1;
 
 for i=1:numberOfForwardSelections
@@ -74,7 +74,7 @@ while ittNo<=stopCriterion
         %% classify the data using the new test feature matrix
         % Vi skal have beluttet os for en classifier, har bare tage
         % discriminant analyse
-        Mdl = fitctree(featSelecTestMatrxTrain,trainLabelVec);
+        Mdl = fitcsvm(featSelecTestMatrxTrain,trainLabelVec);
         [label,score] = predict(Mdl,featSelecTestMatrxTest);
         %% obtain performance metrics based on the classification
         [X,Y,T,AUC] = perfcurve(testLabelVec,score(:,1),1);
