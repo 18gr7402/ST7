@@ -19,12 +19,12 @@ for i=1:size(data,2)-1
     dataNAN(1,i) = sum(isnan(data(:,i)));
 end
 
-thresholdForExcludingNAN = 1500;
+thresholdForExcludingNAN = 8000;
 data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
-stopCriterion = 15;
-numberOfForwardSelections = 1;
+stopCriterion = 2;
+numberOfForwardSelections = 20;
 
 for i=1:numberOfForwardSelections
 %% Bestem om vi vil køre med vores standard cv eller er ny random
@@ -74,7 +74,7 @@ while ittNo<=stopCriterion
         %% classify the data using the new test feature matrix
         % Vi skal have beluttet os for en classifier, har bare tage
         % discriminant analyse
-        Mdl = fitctree(featSelecTestMatrxTrain,trainLabelVec);
+        Mdl = fitcknn(featSelecTestMatrxTrain,trainLabelVec);
         [label,score] = predict(Mdl,featSelecTestMatrxTest);
         %% obtain performance metrics based on the classification
         [X,Y,T,AUC] = perfcurve(testLabelVec,score(:,1),1);
