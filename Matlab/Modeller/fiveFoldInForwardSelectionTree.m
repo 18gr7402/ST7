@@ -1,6 +1,6 @@
-clear
 close all
 clc
+clearvars -except resulterendeFeatures resulterendeAUC idx
 
 %% Desciption
 %Scrip for farward selection of the data 
@@ -24,7 +24,7 @@ data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
 stopCriterion = 15;
-numberOfForwardSelections = 2;
+numberOfForwardSelections = 1;
 
 for i=1:numberOfForwardSelections
 %% Bestem om vi vil køre med vores standard cv eller er ny random
@@ -98,9 +98,10 @@ while ittNo<=stopCriterion
     ittNo=ittNo+1;
 end
 
-resulterendeFeatures(i,:) = selectFeatIdxItt;
-resulterendeAUC(i,:) = selectFeatAucItt;
+resulterendeFeatures(idx,:) = selectFeatIdxItt;
+resulterendeAUC(idx,:) = selectFeatAucItt;
 
+idx = idx + 1;
 end
 
 
