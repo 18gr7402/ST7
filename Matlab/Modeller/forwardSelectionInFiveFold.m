@@ -38,6 +38,14 @@ cv = cvpartition(data(:,51),'KFold',nFold,'Stratify',true);
 
 %%
 
+for i=1:size(data,2)-1
+    dataNAN(1,i) = sum(isnan(data(:,i)));
+end
+
+thresholdForExcludingNAN = 7000;
+
+data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
+
 for foldNo=1:nFold
     %% finds index on the training and test samples
     trainIndex=find(training(cv,foldNo)==1);
@@ -78,7 +86,7 @@ while ittNo<=length(selectedFeatArr)
         %% classify the data using the new test feature matrix
         % Vi skal have beluttet os for en classifier, har bare tage
         % discriminant analyse
-        Mdl = fitcknn(featSelecTestMatrxTrain,trainLabelVec);
+        Mdl = fitctree(featSelecTestMatrxTrain,trainLabelVec);
         [label,score] = predict(Mdl,featSelecTestMatrxTest);
         %% obtain performance metrics based on the classification
         [X,Y,T,AUC] = perfcurve(testLabelVec,score(:,1),1);
