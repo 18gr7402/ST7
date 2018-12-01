@@ -1,6 +1,6 @@
 close all
 clc
-clearvars -except resulterendeFeatures resulterendeAUC idx
+clearvars -except resulterendeFeatures resulterendeAUC idx err_count
 
 %% Desciption
 %Scrip for farward selection of the data 
@@ -24,9 +24,10 @@ data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
 stopCriterion = 15;
-numberOfForwardSelections = 2;
+numberOfForwardSelections = 200;
 
 for i=1:numberOfForwardSelections
+    try
 %% Bestem om vi vil køre med vores standard cv eller er ny random
     cv = cvpartition(data(:,size(data,2)), 'KFold',nFold,'Stratify',true);
 
@@ -102,6 +103,10 @@ resulterendeFeatures(idx,:) = selectFeatIdxItt;
 resulterendeAUC(idx,:) = selectFeatAucItt;
 
 idx = idx + 1;
+    
+    catch MyErr
+        err_count = err_count + 1
+    end
 end
 
 
