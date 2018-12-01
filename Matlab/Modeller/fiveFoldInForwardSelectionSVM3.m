@@ -27,6 +27,7 @@ stopCriterion = 15;
 numberOfForwardSelections = 1;
 
 for i=1:numberOfForwardSelections
+try
 %% Bestem om vi vil køre med vores standard cv eller er ny random
     cv = cvpartition(data(:,size(data,2)), 'KFold',nFold,'Stratify',true);
 
@@ -102,6 +103,9 @@ resulterendeFeatures(idx,:) = selectFeatIdxItt;
 resulterendeAUC(idx,:) = selectFeatAucItt;
 
 idx = idx + 1;
+catch MyErr
+err_count = err_count+1
+end
 end
 
 
