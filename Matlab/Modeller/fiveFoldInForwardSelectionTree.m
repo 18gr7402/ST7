@@ -24,7 +24,7 @@ data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
 stopCriterion = 15;
-numberOfForwardSelections = 1;
+numberOfForwardSelections = 30;
 
 for i=1:numberOfForwardSelections
 %% Bestem om vi vil køre med vores standard cv eller er ny random
