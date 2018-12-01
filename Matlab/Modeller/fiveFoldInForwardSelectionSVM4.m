@@ -1,9 +1,9 @@
 close all
 clc
-clearvars -except resulterendeFeatures resulterendeAUC idx err_count
+clearvars -except resulterendeFeatures resulterendeAUC idx
 
 %% Desciption
-%Scrip for farward selection of the data 
+%Scrip for forward selection of the data 
 
 %% Load data
 load('dataFinalForForwardSelection5000');
@@ -24,10 +24,10 @@ data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
 stopCriterion = 15;
-numberOfForwardSelections = 4;
+numberOfForwardSelections = 3;
 
 for i=1:numberOfForwardSelections
-    try
+   try    
 %% Bestem om vi vil køre med vores standard cv eller er ny random
     cv = cvpartition(data(:,size(data,2)), 'KFold',nFold,'Stratify',true);
 
@@ -75,13 +75,13 @@ while ittNo<=stopCriterion
         %% classify the data using the new test feature matrix
         % Vi skal have beluttet os for en classifier, har bare tage
         % discriminant analyse
-        Mdl = fitcknn(featSelecTestMatrxTrain,trainLabelVec);
+        Mdl = fitcsvm(featSelecTestMatrxTrain,trainLabelVec);
         [label,score] = predict(Mdl,featSelecTestMatrxTest);
         %% obtain performance metrics based on the classification
         [X,Y,T,AUC] = perfcurve(testLabelVec,score(:,1),1);
         foldAUC(:,foldNo) = AUC;
         end
-        featAuc(:,featTestNo)=mean(foldAUC);
+        featAuc(:,featTestNo)=mean(foldAUC)
     end
     prevAuc=maxAuc;
     %% finds the best feature combination and store the results
@@ -96,14 +96,14 @@ while ittNo<=stopCriterion
     %% summary of which features are selected and the obtained AUCS
     selectFeatIdxItt(ittNo)=selectFeatInx;
     selectFeatAucItt(ittNo)=maxAuc;
-    ittNo=ittNo+1;
+    ittNo=ittNo+1
 end
 
 resulterendeFeatures(idx,:) = selectFeatIdxItt;
 resulterendeAUC(idx,:) = selectFeatAucItt;
 
 idx = idx + 1
-    
+
     catch MyErr
         err_count = err_count + 1
     end
