@@ -1,6 +1,6 @@
 close all
 clc
-clearvars -except resulterendeFeatures resulterendeAUC idx
+clearvars -except resulterendeFeatures resulterendeAUC idx err_count
 
 %% Desciption
 %Scrip for forward selection of the data 
