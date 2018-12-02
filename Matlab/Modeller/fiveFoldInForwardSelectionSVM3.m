@@ -1,6 +1,6 @@
 close all
 clc
-clearvars -except resulterendeFeatures resulterendeAUC idx
+clearvars -except resulterendeFeatures resulterendeAUC idx err_count
 
 %% Desciption
 %Scrip for forward selection of the data 
@@ -24,10 +24,10 @@ data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
 stopCriterion = 15;
-numberOfForwardSelections = 1;
+numberOfForwardSelections = 2;
 
 for i=1:numberOfForwardSelections
-try
+   try    
 %% Bestem om vi vil køre med vores standard cv eller er ny random
     cv = cvpartition(data(:,size(data,2)), 'KFold',nFold,'Stratify',true);
 
@@ -81,7 +81,7 @@ while ittNo<=stopCriterion
         [X,Y,T,AUC] = perfcurve(testLabelVec,score(:,1),1);
         foldAUC(:,foldNo) = AUC;
         end
-        featAuc(:,featTestNo)=mean(foldAUC);
+        featAuc(:,featTestNo)=mean(foldAUC)
     end
     prevAuc=maxAuc;
     %% finds the best feature combination and store the results
@@ -96,16 +96,17 @@ while ittNo<=stopCriterion
     %% summary of which features are selected and the obtained AUCS
     selectFeatIdxItt(ittNo)=selectFeatInx;
     selectFeatAucItt(ittNo)=maxAuc;
-    ittNo=ittNo+1;
+    ittNo=ittNo+1
 end
 
 resulterendeFeatures(idx,:) = selectFeatIdxItt;
 resulterendeAUC(idx,:) = selectFeatAucItt;
 
-idx = idx + 1;
-catch MyErr
-err_count = err_count+1
-end
+idx = idx + 1
+
+    catch MyErr
+        err_count = err_count + 1
+    end
 end
 
 
