@@ -1,0 +1,12 @@
+clear
+close all
+clc
+load resulterendeAUCKNN1;
+load resulterendeFeaturesKNN1;
+
+%mode(resulterendeFeatures(:,1));
+
+u=unique(resulterendeFeatures);
+[n,b]=histc(resulterendeFeatures,u);
+[n,is]=sort(n,'descend');
+m=resulterendeFeatures(arrayfun(@(x)))

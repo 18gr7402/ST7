@@ -1,0 +1,19 @@
+clear
+close all
+clc
+
+load ('resulterendeAUCBayes');
+AUC1=resulterendeAUC;
+load ('resulterendeAUCTree2');
+AUC2=resulterendeAUC;
+
+
+load ('resulterendeFeaturesTree1');
+Features1=resulterendeFeatures;
+load ('resulterendeFeaturesTree2');
+Features2=resulterendeFeatures;
+
+
+
+resulterendeAUC=[AUC1;AUC2];
+resulterendeFeatures=[Features1;Features2];

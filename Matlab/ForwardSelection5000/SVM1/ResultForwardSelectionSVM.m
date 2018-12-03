@@ -1,0 +1,112 @@
+clear
+close all
+clc
+
+load ('resulterendeAUCSVM1_1');
+AUC1=resulterendeAUC;
+load ('resulterendeAUCSVM2_1');
+AUC2=resulterendeAUC;
+load ('resulterendeAUCSVM2_2');
+AUC3=resulterendeAUC;
+load ('resulterendeAUCSVM2_3');
+AUC4=resulterendeAUC;
+load ('resulterendeAUCSVM2_4');
+AUC5=resulterendeAUC;
+load ('resulterendeAUCSVM3_1');
+AUC6=resulterendeAUC;
+load ('resulterendeAUCSVM4_1');
+AUC7=resulterendeAUC;
+load ('resulterendeAUCSVM4_2');
+AUC8=resulterendeAUC;
+
+load ('resulterendeFeaturesSVM1_1');
+Features1=resulterendeFeatures;
+load ('resulterendeFeaturesSVM2_1');
+Features2=resulterendeFeatures;
+load ('resulterendeFeaturesSVM2_2');
+Features3=resulterendeFeatures;
+load ('resulterendeFeaturesSVM2_3');
+Features4=resulterendeFeatures;
+load ('resulterendeFeaturesSVM2_4');
+Features5=resulterendeFeatures;
+load ('resulterendeFeaturesSVM3_1');
+Features6=resulterendeFeatures;
+load ('resulterendeFeaturesSVM4_1');
+Features7=resulterendeFeatures;
+load ('resulterendeFeaturesSVM4_2');
+Features8=resulterendeFeatures;
+
+
+resulterendeAUC=[AUC1;AUC2;AUC3;AUC4;AUC5;AUC6;AUC7;AUC8];
+resulterendeFeatures=[Features1;Features2;Features3;Features4;Features5;Features6;Features7;Features8];
+
+
+A=resulterendeFeatures(:,1);
+u=unique(A);
+[n,b]=histc(A,u);
+[n,is]=sort(n,'descend');
+m=A(arrayfun(@(x) find(b==x,1,'first'),is));
+Feature1=[n m];
+
+B=resulterendeFeatures(find(A==2),2);
+u=unique(B);
+[n,b]=histc(B,u);
+[n,is]=sort(n,'descend');
+m=B(arrayfun(@(x) find(b==x,1,'first'),is));
+Feature2=[n m];
+
+B1=resulterendeFeatures(:,2);
+
+C=resulterendeFeatures(find(A==2 & B1==39),3);
+u=unique(C);
+[n,b]=histc(C,u);
+[n,is]=sort(n,'descend');
+m=C(arrayfun(@(x) find(b==x,1,'first'),is));
+Feature3=[n m];
+
+C1=resulterendeFeatures(:,3);
+
+D=resulterendeFeatures(find(A==2 & B1==39 & C1==8),4);
+u=unique(D);
+[n,b]=histc(D,u);
+[n,is]=sort(n,'descend');
+m=D(arrayfun(@(x) find(b==x,1,'first'),is));
+Feature4=[n m];
+
+D1= resulterendeFeatures(:,4);
+
+E=resulterendeFeatures(find(A==2 & B1==39 & C1==8 & D1==42),5);
+u=unique(E);
+[n,b]=histc(E,u);
+[n,is]=sort(n,'descend');
+m=E(arrayfun(@(x) find(b==x,1,'first'),is));
+Feature5=[n m];
+
+E1=resulterendeFeatures(:,5);
+
+F=resulterendeFeatures(find(A==2 & B1==39 & C1==8 & D1==42 & E1==24),6);
+u=unique(F);
+[n,b]=histc(F,u);
+[n,is]=sort(n,'descend');
+m=F(arrayfun(@(x) find(b==x,1,'first'),is));
+Feature6=[n m];
+
+F1=resulterendeFeatures(:,6);
+
+G=resulterendeFeatures(find(A==2 & B1==39 & C1==8 & D1==42 & E1==24 & F1==18),7);
+u=unique(G);
+[n,b]=histc(G,u);
+[n,is]=sort(n,'descend');
+m=G(arrayfun(@(x) find(b==x,1,'first'),is));
+Feature7=[n m];
+
+G1=resulterendeFeatures(:,7);
+
+H=resulterendeFeatures(find(A==2 & B1==39 & C1==8 & D1==42 & E1==24 & F1==18 & G1==44),8);
+u=unique(H);
+[n,b]=histc(H,u);
+[n,is]=sort(n,'descend');
+m=H(arrayfun(@(x) find(b==x,1,'first'),is));
+Feature8=[n m];
+
+plot(resulterendeAUC(1,:));
