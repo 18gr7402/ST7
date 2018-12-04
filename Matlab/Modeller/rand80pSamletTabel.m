@@ -3,6 +3,8 @@
 %load rand80pncrr;
 %load rand80prcrr; 
 
+%OBS! mangler VPRR værdierne
+
 %% LabLabel - laves kun for at alle tabellerne hedder det samme
 LabLabel = rand80plab;
 
@@ -19,11 +21,11 @@ NCRRLabel.Properties.VariableNames = {'patientunitstayid' 'name' 'result' 'offse
 
 %% VPRR - indsæt label i tabellen
 % 
-% %rand5000pidVPRR.observationoffset=str2double(rand5000pidVPRR.observationoffset);
-% VPRR = (1:height(rand5000pidVPRR))';
-% VPRR = repmat(string('VPRR'),height(rand5000pidVPRR),1);
+% %rand80pVPRR.observationoffset=str2double(rand80pVPRR.observationoffset);
+% VPRR = (1:height(rand80pVPRR))';
+% VPRR = repmat(string('VPRR'),height(rand80pVPRR),1);
 % 
-% VPRRLabel = addvars(rand5000pidVPRR,VPRR,'Before',('respiration'));
+% VPRRLabel = addvars(rand80pVPRR,VPRR,'Before',('respiration'));
 % %VPRRLabel.observationoffset = str2double(VPRRLabel.observationoffset);
 % VPRRLabel.Properties.VariableNames = {'patientunitstayid' 'name' 'result' 'offset' 'unitadmittime24'};
 % % VPRRLabel.offset = str2double(VPRRLabel.offset);
@@ -48,5 +50,5 @@ RCRRpatientLabel.Properties.VariableNames = {'patientunitstayid' 'name' 'result'
 
 %% Tabellerne er samlet
 
-FeatureLabelTabel = vertcat(LabLabel,NCBGLabel,NCRRLabel,RCRRpatientLabel);
+FeatureLabelTabel80p = vertcat(LabLabel,NCBGLabel,NCRRLabel,RCRRpatientLabel);
  
