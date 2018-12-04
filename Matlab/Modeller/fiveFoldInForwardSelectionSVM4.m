@@ -24,7 +24,7 @@ data = [data(:,find(dataNAN <=thresholdForExcludingNAN)),data(:,size(data,2))];
 
 %% Parametre der skal sættes
 stopCriterion = 15;
-numberOfForwardSelections = 3;
+numberOfForwardSelections = 4;
 
 for i=1:numberOfForwardSelections
    try    
