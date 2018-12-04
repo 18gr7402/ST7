@@ -123,7 +123,6 @@ for i=1:length(uniquePatient)
            if ~isempty(find(day+1 == patientInfo.testDay(ismember(infoLocation,glucoseMeasurements))))
                
            patientDayInfo = patientInfo(find(patientInfo.testDay==day),:);
-                %for index=1:length(unique(dataTrim.Category));
                 % OBS TJEK category nummer, da dette ændrer sig
                 dataSamlet(row,1)=nanmean(patientDayInfo.result(find(patientDayInfo.Category==1))); %-monos
                 %dataSamlet(row,2)=nanmean(patientDayInfo.result(find(patientDayInfo.Category==))); mangler NCRR
@@ -191,15 +190,15 @@ end
 stringCategory = string(unique(dataTrim.name));
 stringCategory{end+1} = char(strcat('Median',string(categoryOverview.Name(1)))); %-monos
 % stringCategory{end+1} = char(strcat('Median',string(categoryOverview.Name()))); %RR Overall
-% stringCategory{end+1} = char(strcat('Std',string(categoryOverview.Name()))); %phosphate
+stringCategory{end+1} = char(strcat('Std',string(categoryOverview.Name(5)))); %phosphate
 % stringCategory{end+1} = char(strcat('Variance',string(categoryOverview.Name()))); %NCBG
-% stringCategory{end+1} = char(strcat('Min',string(categoryOverview.Name()))); %-monos
+stringCategory{end+1} = char(strcat('Min',string(categoryOverview.Name(1)))); %-monos
 % stringCategory{end+1} = char(strcat('Min',string(categoryOverview.Name()))); %glucose
 % stringCategory{end+1} = char(strcat('Min',string(categoryOverview.Name()))); %bedside glucose overall
-% stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name()))); %albumin
-% stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name()))); %phosphate
+stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name(2)))); %albumin
+stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name(5)))); %phosphate
 % stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name()))); %total albumin
-% stringCategory{end+1} = char(strcat('Range',string(categoryOverview.Name()))); %bedside glucose
+stringCategory{end+1} = char(strcat('Range',string(categoryOverview.Name(3)))); %bedside glucose
 
 categoryOverviewWithSubfeatures = [stringCategory,(1:length(stringCategory))'];
 
