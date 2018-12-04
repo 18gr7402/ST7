@@ -5,12 +5,12 @@ clear
 
 %% Hent data, ekskluder patienter, label data og opdeling data på dage pr. patient
 
-%% Load data 
-load('FeatureLabelTabel80p');
+%% Load data VIGTIGT! ændre til det rette subset
+load('subset80p1');
 
 %% Dupliker data så vi regner videre på en ny variabel
 
-data = FeatureLabelTabel80p;
+data = subset1;
 
 %% Her fjernes alle rækker med negative offset og output gemmes i en ny tabel
 for i = 1:size(data,1)
@@ -63,20 +63,19 @@ label(locationOfglucoseMeasurementsUnder70)=1;
 %Save
 dataTrim = [dataTrim table(label)];
 
-%% Opsætning af data til gennerelt overblik
-
-%PatientID og hvilken dag der er oplevet hypo
-hypoPatientDayInfo = [dataTrim.patientunitstayid(locationOfglucoseMeasurementsUnder70) dataTrim.testDay(locationOfglucoseMeasurementsUnder70)];
-
-%Indexer labname til talrepresentationer
-category = categorical(string(dataTrim.name));
-dataTrim.Category = grp2idx(category);
-varNames = {'Name','Category'};
-categoryOverview = table(unique(category),unique(dataTrim.Category),'VariableNames',varNames);
-
-%Preallocate
-numberOfDaysIncluded = 5;
-
+%% Opsætning af data til generelt overblik
+% 
+% %PatientID og hvilken dag der er oplevet hypo
+% hypoPatientDayInfo = [dataTrim.patientunitstayid(locationOfglucoseMeasurementsUnder70) dataTrim.testDay(locationOfglucoseMeasurementsUnder70)];
+% 
+% %Indexer labname til talrepresentationer
+% category = categorical(string(dataTrim.name));
+% dataTrim.Category = grp2idx(category);
+% varNames = {'Name','Category'};
+% categoryOverview = table(unique(category),unique(dataTrim.Category),'VariableNames',varNames);
+% 
+% %Preallocate
+% numberOfDaysIncluded = 5;
 
 %% Opsætning af data til datasamlet
 % Variabel der definerer antallet af subfeatures
@@ -125,54 +124,54 @@ for i=1:length(uniquePatient)
            patientDayInfo = patientInfo(find(patientInfo.testDay==day),:);
                 % OBS TJEK category nummer, da dette ændrer sig
                 dataSamlet(row,1)=nanmean(patientDayInfo.result(find(patientDayInfo.Category==1))); %-monos
-                %dataSamlet(row,2)=nanmean(patientDayInfo.result(find(patientDayInfo.Category==))); mangler NCRR
-                %dataSamlet(row,3)=nanmean(patientDayInfo.result(find(patientDayInfo.Category==))); mangler RespiratoryRateOverall
+                dataSamlet(row,2)=nanmean(patientDayInfo.result(find(patientDayInfo.Category==3))); %NCRR
+                dataSamlet(row,3)=nanmean(patientDayInfo.result(find(patientDayInfo.Category==6))); %RespiratoryRateOverall
                 dataSamlet(row,4)=nanmedian(patientDayInfo.result(find(patientDayInfo.Category==1))); %-monos
-                %dataSamlet(row,5)=nanmedian(patientDayInfo.result(find(patientDayInfo.Category==))); mangler RROverall
-                dataSamlet(row,6)=nanstd(patientDayInfo.result(find(patientDayInfo.Category==5))); %phosphate
-                %dataSamlet(row,7)=nanvar(patientDayInfo.result(find(patientDayInfo.Category==))); NCBG
+                dataSamlet(row,5)=nanmedian(patientDayInfo.result(find(patientDayInfo.Category==9))); %RespiratoryRateOverall
+                dataSamlet(row,6)=nanstd(patientDayInfo.result(find(patientDayInfo.Category==8))); %phosphate
+                dataSamlet(row,7)=nanvar(patientDayInfo.result(find(patientDayInfo.Category==2))); %NCBG
+                
                     if isempty(nanmin(patientDayInfo.result(find(patientDayInfo.Category==1)))) %-monos
                         dataSamlet(row,8)=nan;
                     else 
                         dataSamlet(row,8)=nanmin(patientDayInfo.result(find(patientDayInfo.Category==1)));
                     end
                     
-%                     if isempty(nanmin(patientDayInfo.result(find(patientDayInfo.Category==)))) % glucose 
-%                         dataSamlet(row,9)=nan;
-%                     else 
-%                         dataSamlet(row,9)=nanmin(patientDayInfo.result(find(patientDayInfo.Category==)));
-%                     end
-%                     
-%                     if isempty(nanmin(patientDayInfo.result(find(patientDayInfo.Category==)))) %bedside glucose overall
-%                         dataSamlet(row,10)=nan;
-%                     else 
-%                         dataSamlet(row,10)=nanmin(patientDayInfo.result(find(patientDayInfo.Category==)));
-%                     end
+                    if isempty(nanmin(patientDayInfo.result(find(patientDayInfo.Category==7)))) % glucose 
+                        dataSamlet(row,9)=nan;
+                    else 
+                        dataSamlet(row,9)=nanmin(patientDayInfo.result(find(patientDayInfo.Category==7)));
+                    end
                     
-                    if isempty(nanmax(patientDayInfo.result(find(patientDayInfo.Category==2)))) %albumin
+                    if isempty(nanmin(patientDayInfo.result(find(patientDayInfo.Category==6)))) %bedside glucose overall
+                        dataSamlet(row,10)=nan;
+                    else 
+                        dataSamlet(row,10)=nanmin(patientDayInfo.result(find(patientDayInfo.Category==6)));
+                    end
+                    
+                    if isempty(nanmax(patientDayInfo.result(find(patientDayInfo.Category==4)))) %albumin
                         dataSamlet(row,11)=nan;
                     else 
-                        dataSamlet(row,11)=nanmax(patientDayInfo.result(find(patientDayInfo.Category==2)));
+                        dataSamlet(row,11)=nanmax(patientDayInfo.result(find(patientDayInfo.Category==4)));
                     end
                                         
-                    if isempty(nanmax(patientDayInfo.result(find(patientDayInfo.Category==5)))) %phosphate
+                    if isempty(nanmax(patientDayInfo.result(find(patientDayInfo.Category==8)))) %phosphate
                         dataSamlet(row,12)=nan;
                     else 
-                        dataSamlet(row,12)=nanmax(patientDayInfo.result(find(patientDayInfo.Category==5)));
+                        dataSamlet(row,12)=nanmax(patientDayInfo.result(find(patientDayInfo.Category==8)));
                     end
                     
-%                     if isempty(nanmax(patientDayInfo.result(find(patientDayInfo.Category==)))) %total bilirubin
-%                         dataSamlet(row,13)=nan;
-%                     else 
-%                         dataSamlet(row,13)=nanmax(patientDayInfo.result(find(patientDayInfo.Category==)));
-%                     end
+                    if isempty(nanmax(patientDayInfo.result(find(patientDayInfo.Category==10)))) %total bilirubin
+                        dataSamlet(row,13)=nan;
+                    else 
+                        dataSamlet(row,13)=nanmax(patientDayInfo.result(find(patientDayInfo.Category==10)));
+                    end
                     
-                    if isempty(range(patientDayInfo.result(find(patientDayInfo.Category==3)))) %bedside glucose
+                    if isempty(range(patientDayInfo.result(find(patientDayInfo.Category==5)))) %bedside glucose
                         dataSamlet(row,14)=nan;
                     else 
-                        dataSamlet(row,14)=range(patientDayInfo.result(find(patientDayInfo.Category==3)));
+                        dataSamlet(row,14)=range(patientDayInfo.result(find(patientDayInfo.Category==5)));
                     end
-                %end
         
             % Check om hypo i morgen
             isHypoTomorrow = ~isempty(find(hypoDays == day+1));
@@ -189,16 +188,16 @@ end
 %% Tilføj sub-kategorier
 stringCategory = string(unique(dataTrim.name));
 stringCategory{end+1} = char(strcat('Median',string(categoryOverview.Name(1)))); %-monos
-% stringCategory{end+1} = char(strcat('Median',string(categoryOverview.Name()))); %RR Overall
-stringCategory{end+1} = char(strcat('Std',string(categoryOverview.Name(5)))); %phosphate
-% stringCategory{end+1} = char(strcat('Variance',string(categoryOverview.Name()))); %NCBG
+stringCategory{end+1} = char(strcat('Median',string(categoryOverview.Name(9)))); %RR Overall
+stringCategory{end+1} = char(strcat('Std',string(categoryOverview.Name(8)))); %phosphate
+stringCategory{end+1} = char(strcat('Variance',string(categoryOverview.Name(2)))); %NCBG
 stringCategory{end+1} = char(strcat('Min',string(categoryOverview.Name(1)))); %-monos
-% stringCategory{end+1} = char(strcat('Min',string(categoryOverview.Name()))); %glucose
-% stringCategory{end+1} = char(strcat('Min',string(categoryOverview.Name()))); %bedside glucose overall
-stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name(2)))); %albumin
-stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name(5)))); %phosphate
-% stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name()))); %total albumin
-stringCategory{end+1} = char(strcat('Range',string(categoryOverview.Name(3)))); %bedside glucose
+stringCategory{end+1} = char(strcat('Min',string(categoryOverview.Name(7)))); %glucose
+stringCategory{end+1} = char(strcat('Min',string(categoryOverview.Name(6)))); %bedside glucose overall
+stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name(4)))); %albumin
+stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name(8)))); %phosphate
+stringCategory{end+1} = char(strcat('Max',string(categoryOverview.Name(10)))); %total bilirubin
+stringCategory{end+1} = char(strcat('Range',string(categoryOverview.Name(5)))); %bedside glucose
 
 categoryOverviewWithSubfeatures = [stringCategory,(1:length(stringCategory))'];
 
